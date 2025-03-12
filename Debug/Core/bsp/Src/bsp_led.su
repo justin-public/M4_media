@@ -1,0 +1,3 @@
+../Core/bsp/Src/bsp_led.c:61:6:bsp_InitLed	48	static
+../Core/bsp/Src/bsp_led.c:100:6:bsp_LedOn	16	static
+../Core/bsp/Src/bsp_led.c:127:6:bsp_LedOff	16	static
