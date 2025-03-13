@@ -1,0 +1,3 @@
+../Core/bsp/Src/bsp_i2c_gpio.c:27:6:i2c_Delay	16	static
+../Core/bsp/Src/bsp_i2c_gpio.c:39:6:i2c_Stop	8	static
+../Core/bsp/Src/bsp_i2c_gpio.c:52:6:bsp_InitI2C	32	static

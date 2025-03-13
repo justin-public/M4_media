@@ -1,1 +1,2 @@
 ../Core/bsp/bsp.c:9:6:bsp_Init	1
+../Core/bsp/bsp.c:25:6:bsp_Idle	1

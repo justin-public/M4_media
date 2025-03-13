@@ -1,0 +1,9 @@
+../Core/bsp/Src/bsp_uart_fifo.c:64:6:bsp_InitUart	8	static
+../Core/bsp/Src/bsp_uart_fifo.c:78:6:USART3_SendBefor	8	static
+../Core/bsp/Src/bsp_uart_fifo.c:89:6:USART3_SendOver	8	static
+../Core/bsp/Src/bsp_uart_fifo.c:99:13:UartVarInit	4	static
+../Core/bsp/Src/bsp_uart_fifo.c:210:13:InitHardUart	48	static
+../Core/bsp/Src/bsp_uart_fifo.c:376:13:ConfigUartNVIC	8	static
+../Core/bsp/Src/bsp_uart_fifo.c:417:19:UART1_Transmit	24	static
+../Core/bsp/Src/bsp_uart_fifo.c:436:19:UART1_Transmit_IT	24	static
+../Core/bsp/Src/bsp_uart_fifo.c:451:19:UART1_Transmit_String	16	static

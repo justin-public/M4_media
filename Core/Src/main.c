@@ -1,29 +1,53 @@
 #include "bsp.h"
 
-
+void SystemInit_clk(void);
 void SystemClock_Config(void);
-
-#if 0
-	static void MX_GPIO_Init(void);
-#endif
+void Delay_ms(uint32_t ms);
 
 int main(void)
 {
   HAL_Init();
-  SystemClock_Config();
-#if 0
-  MX_GPIO_Init();
-#endif
+  SystemInit_clk();
   bsp_Init();
+
+  LCD_InitHard();
+
+  // 변수 선언
+  char message[] = "Hello, UART1!\r\n";
+  HAL_StatusTypeDef status;
 
   while (1)
   {
-	  bsp_LedOn(1);
-	  //bsp_LedOn(2);
-	  //bsp_LedOn(3);
-	  //bsp_LedOn(4);
+	  //status = UART1_Transmit_String(message);
+	  //if (status != HAL_OK)
+	  //{
+	       //Error_Handler();
+	  //}
+	  // 잠시 대기
+	  //HAL_Delay(1000000000);
   }
 }
+
+void Delay_ms(uint32_t ms)
+{
+  HAL_Delay(ms);
+}
+
+void SystemInit_clk(void)
+{
+	SystemClock_Config();
+
+	FLASH->ACR |= FLASH_ACR_LATENCY_5WS;
+
+	FLASH->ACR |= FLASH_ACR_ICEN | FLASH_ACR_DCEN;
+
+	/* Set the VDD voltage to 3.3V (Main regulator output voltage scale 1) */
+	// STM32F4의 경우 디폴트 설정이 scale1 모드임.
+
+	/* Enable the Prefetch buffer (already disabled in the original config) */
+	FLASH->ACR |= FLASH_ACR_PRFTEN;
+}
+
 
 void SystemClock_Config(void)
 {

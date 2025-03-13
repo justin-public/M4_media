@@ -45,15 +45,15 @@
 #define DEBUG_GPS_TO_COM1	/* ´òÓ¡GPSÊý¾Ýµ½´®¿Ú1 */
 
 /* Í¨¹ýÈ¡Ïû×¢ÊÍ»òÕßÌí¼Ó×¢ÊÍµÄ·½Ê½¿ØÖÆÊÇ·ñ°üº¬µ×²ãÇý¶¯Ä£¿é */
-//#include "bsp_uart_fifo.h"
+#include "bsp_uart_fifo.h"
 #include "bsp_led.h"
-//#include "bsp_timer.h"
-//#include "bsp_key.h"
+#include "bsp_timer.h"
+#include "bsp_key.h"
 
 //#include "bsp_spi_flash.h"
 //#include "bsp_cpu_flash.h"
 //#include "bsp_sdio_sd.h"
-//#include "bsp_i2c_gpio.h"
+#include "bsp_i2c_gpio.h"
 //#include "bsp_eeprom_24xx.h"
 //#include "bsp_si4730.h"
 //#include "bsp_hmc5883l.h"
@@ -66,10 +66,10 @@
 //#include "bsp_nand_flash.h"
 //#include "bsp_nor_flash.h"
 
-//#include "LCD_RA8875.h"
-//#include "LCD_SPFD5420.h"
-//#include "bsp_ra8875_port.h"
-//#include "bsp_tft_lcd.h"
+#include "LCD_RA8875.h"
+#include "LCD_SPFD5420.h"
+#include "bsp_ra8875_port.h"
+#include "bsp_tft_lcd.h"
 
 //#include "bsp_touch.h"
 //#include "bsp_camera.h"

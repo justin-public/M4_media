@@ -1,0 +1,13 @@
+../Core/bsp/Src/bsp_key.c:122:17:IsKeyDown1	4	static
+../Core/bsp/Src/bsp_key.c:123:17:IsKeyDown2	4	static
+../Core/bsp/Src/bsp_key.c:124:17:IsKeyDown3	4	static
+../Core/bsp/Src/bsp_key.c:125:17:IsKeyDown4	4	static
+../Core/bsp/Src/bsp_key.c:126:17:IsKeyDown5	4	static
+../Core/bsp/Src/bsp_key.c:127:17:IsKeyDown6	4	static
+../Core/bsp/Src/bsp_key.c:128:17:IsKeyDown7	4	static
+../Core/bsp/Src/bsp_key.c:129:17:IsKeyDown8	4	static
+../Core/bsp/Src/bsp_key.c:131:17:IsKeyDown9	8	static
+../Core/bsp/Src/bsp_key.c:132:17:IsKeyDown10	8	static
+../Core/bsp/Src/bsp_key.c:141:6:bsp_InitKey	8	static
+../Core/bsp/Src/bsp_key.c:152:13:bsp_InitKeyVar	16	static
+../Core/bsp/Src/bsp_key.c:207:13:bsp_InitKeyHard	48	static

@@ -1,0 +1,4 @@
+../Drivers/CMSIS/Include/core_cm4.h:1816:22:__NVIC_SetPriority	16	static
+../Drivers/CMSIS/Include/core_cm4.h:2022:26:SysTick_Config	16	static
+../Core/bsp/Src/bsp_timer.c:29:6:bsp_InitTimer	16	static
+../Core/bsp/Src/bsp_timer.c:48:6:bsp_DelayMS	24	static,ignoring_inline_asm

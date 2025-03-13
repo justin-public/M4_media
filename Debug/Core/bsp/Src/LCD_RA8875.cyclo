@@ -1,0 +1,13 @@
+../Core/bsp/Src/LCD_RA8875.c:36:10:RA8875_ReadID	1
+../Core/bsp/Src/LCD_RA8875.c:46:16:RA8875_ReadReg	1
+../Core/bsp/Src/LCD_RA8875.c:57:13:RA8875_WriteReg	1
+../Core/bsp/Src/LCD_RA8875.c:72:6:RA8875_InitHard	2
+../Core/bsp/Src/LCD_RA8875.c:366:6:RA8875_SetDispWin	1
+../Core/bsp/Src/LCD_RA8875.c:417:13:RA8875_SetCursor	1
+../Core/bsp/Src/LCD_RA8875.c:432:6:RA8875_ClrScr	1
+../Core/bsp/Src/LCD_RA8875.c:447:13:BTE_SetTarBlock	2
+../Core/bsp/Src/LCD_RA8875.c:478:13:BTE_SetOperateCode	1
+../Core/bsp/Src/LCD_RA8875.c:488:6:RA8875_SetFrontColor	1
+../Core/bsp/Src/LCD_RA8875.c:500:13:BTE_Start	1
+../Core/bsp/Src/LCD_RA8875.c:514:13:BTE_Wait	2
+../Core/bsp/Src/LCD_RA8875.c:528:6:RA8875_SetBackLight	3

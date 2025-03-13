@@ -1,0 +1,2 @@
+../Core/bsp/Src/LCD_SPFD5420.c:35:10:SPFD5420_ReadID	8	static
+../Core/bsp/Src/LCD_SPFD5420.c:50:17:SPFD5420_ReadReg	16	static
