@@ -244,6 +244,32 @@ static void bsp_InitKeyHard(void)
 	HAL_GPIO_Init(GPIO_PORT_K8, &GPIO_InitStructure);
 }
 
+/*
+*********************************************************************************************************
+*	Func name: bsp_GetKey2
+*********************************************************************************************************
+*/
+uint8_t bsp_GetKey2(void)
+{
+	uint8_t ret;
+
+	if (s_tKey.Read2 == s_tKey.Write)
+	{
+		return KEY_NONE;
+	}
+	else
+	{
+		ret = s_tKey.Buf[s_tKey.Read2];
+
+		if (++s_tKey.Read2 >= KEY_FIFO_SIZE)
+		{
+			s_tKey.Read2 = 0;
+		}
+		return ret;
+	}
+}
+
+
 
 
 

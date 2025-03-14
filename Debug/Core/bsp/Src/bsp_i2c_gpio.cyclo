@@ -1,3 +1,9 @@
-../Core/bsp/Src/bsp_i2c_gpio.c:27:6:i2c_Delay	2
-../Core/bsp/Src/bsp_i2c_gpio.c:39:6:i2c_Stop	1
-../Core/bsp/Src/bsp_i2c_gpio.c:52:6:bsp_InitI2C	1
+../Core/bsp/Src/bsp_i2c_gpio.c:30:6:i2c_Delay	2
+../Core/bsp/Src/bsp_i2c_gpio.c:41:6:i2c_Start	1
+../Core/bsp/Src/bsp_i2c_gpio.c:57:6:i2c_SendByte	4
+../Core/bsp/Src/bsp_i2c_gpio.c:89:9:i2c_ReadByte	3
+../Core/bsp/Src/bsp_i2c_gpio.c:116:9:i2c_WaitAck	2
+../Core/bsp/Src/bsp_i2c_gpio.c:142:6:i2c_Ack	1
+../Core/bsp/Src/bsp_i2c_gpio.c:158:6:i2c_NAck	1
+../Core/bsp/Src/bsp_i2c_gpio.c:174:6:i2c_Stop	1
+../Core/bsp/Src/bsp_i2c_gpio.c:187:6:bsp_InitI2C	1

@@ -54,7 +54,7 @@
 //#include "bsp_cpu_flash.h"
 //#include "bsp_sdio_sd.h"
 #include "bsp_i2c_gpio.h"
-//#include "bsp_eeprom_24xx.h"
+#include "bsp_eeprom_24xx.h"
 //#include "bsp_si4730.h"
 //#include "bsp_hmc5883l.h"
 //#include "bsp_mpu6050.h"

@@ -438,6 +438,26 @@ void RA8875_ClrScr(uint16_t _usColor)
 	BTE_Wait();
 }
 
+/*
+*********************************************************************************************************
+*	Func name: RA8875_PutPixel
+*********************************************************************************************************
+*/
+void RA8875_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
+{
+	s_ucRA8875Busy = 1;
+
+	RA8875_WriteCmd(0x46); RA8875_WriteData(_usX);
+	RA8875_WriteCmd(0x47); RA8875_WriteData(_usX >> 8);
+	RA8875_WriteCmd(0x48); RA8875_WriteData(_usY);
+	RA8875_WriteCmd(0x49); RA8875_WriteData(_usY >> 8);
+
+	RA8875_WriteCmd(0x02); 		/* ÓÃÓÚÉè¶¨RA8875 ½øÈëÄÚ´æ(DDRAM»òCGRAM)¶ÁÈ¡/Ð´ÈëÄ£Ê½ */
+	RA8875_WriteData16(_usColor);
+
+	s_ucRA8875Busy = 0;
+}
+
 
 /*
 *********************************************************************************************************
@@ -491,6 +511,67 @@ void RA8875_SetFrontColor(uint16_t _usColor)
 	RA8875_WriteReg(0x64, (_usColor & 0x07E0) >> 5);	/* G6 */
 	RA8875_WriteReg(0x65, (_usColor & 0x001F));			/* B5 */
 }
+
+/*
+*********************************************************************************************************
+*	Func name: RA8875_DrawBMP
+*********************************************************************************************************
+*/
+void RA8875_DrawBMP(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t *_ptr)
+{
+	uint32_t index = 0;
+	const uint16_t *p;
+
+	RA8875_SetDispWin(_usX, _usY, _usHeight, _usWidth);
+
+	s_ucRA8875Busy = 1;
+
+	RA8875_WriteCmd(0x02); 		
+
+	p = _ptr;
+	for (index = 0; index < _usHeight * _usWidth; index++)
+	{
+		RA8875_WriteData16(*p++);
+	}
+	s_ucRA8875Busy = 0;
+
+	RA8875_QuitWinMode();
+}
+
+/*
+*********************************************************************************************************
+*	Funa name: RA8875_QuitWinMode
+*********************************************************************************************************
+*/
+void RA8875_QuitWinMode(void)
+{
+	RA8875_SetDispWin(0, 0, g_LcdHeight, g_LcdWidth);
+}
+
+/*
+*********************************************************************************************************
+*	Func name: RA8875_WriteData16
+*********************************************************************************************************
+*/
+void RA8875_WriteData16(uint16_t _usRGB)
+{
+#ifdef RA_HARD_SPI	/* Ó²¼þSPI½Ó¿Ú */
+	RA8875_CS_0();
+	SPI_ShiftByte(SPI_WRITE_DATA);
+	SPI_ShiftByte(_usRGB >> 8);
+	RA8875_CS_1();
+
+	RA8875_CS_0();
+	SPI_ShiftByte(SPI_WRITE_DATA);
+	SPI_ShiftByte(_usRGB);
+	RA8875_CS_1();
+#endif
+
+#ifdef RA_HARD_8080_16
+	RA8875_RAM = _usRGB;
+#endif	
+}
+
 
 /*
 *********************************************************************************************************

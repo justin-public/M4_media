@@ -14,6 +14,8 @@ RM := rm -rf
 -include Core/bsp/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Core/Image/subdir.mk
+-include Core/Fonts/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)

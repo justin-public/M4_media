@@ -1,37 +1,72 @@
 #include "bsp.h"
+#include "param.h"
+#include "main_menu.h"
+
 
 void SystemInit_clk(void);
 void SystemClock_Config(void);
+void IWDG_Init(void);
 void Delay_ms(uint32_t ms);
+
+IWDG_HandleTypeDef hiwdg;
+HAL_StatusTypeDef status;
 
 int main(void)
 {
-  HAL_Init();
-  SystemInit_clk();
-  bsp_Init();
+	uint16_t ucStatus;
 
-  LCD_InitHard();
+	HAL_Init();
+	SystemInit_clk();
+	IWDG_Init();
 
-  // 변수 선언
-  char message[] = "Hello, UART1!\r\n";
-  HAL_StatusTypeDef status;
+	bsp_Init();
 
-  while (1)
-  {
-	  //status = UART1_Transmit_String(message);
-	  //if (status != HAL_OK)
-	  //{
-	       //Error_Handler();
-	  //}
-	  // 잠시 대기
-	  //HAL_Delay(1000000000);
-  }
+	LoadParam();
+
+	LCD_InitHard();
+
+	//LCD_ClrScr(CL_YELLOW);
+	//LCD_SetBackLight(g_tParam.ucBackLight);
+
+	// 변수 선언
+#if 0
+	char message[] = "Hello, UART1!\r\n";
+	HAL_StatusTypeDef status;
+	ucStatus = MS_MAIN_MENU;
+#endif
+	ucStatus = MS_MAIN_MENU;
+	while (1)
+	{
+#if 1
+		switch (ucStatus)
+		{
+			case MS_MAIN_MENU:
+				ucStatus = MainMenu();		/* Ö÷½çÃæ×´Ì¬ */
+			break;
+		}
+#endif
+#if 0
+		HAL_GPIO_TogglePin(GPIOI, GPIO_PIN_10);
+		Delay_ms(5000);
+#endif
+#if 0
+		status = UART1_Transmit_String(msg);
+		if (status != HAL_OK)
+		{
+			Error_Handler();
+		}
+		// 잠시 대기
+		HAL_Delay(5000);
+#endif
+	}
 }
 
 void Delay_ms(uint32_t ms)
 {
   HAL_Delay(ms);
 }
+
+
 
 void SystemInit_clk(void)
 {
@@ -48,6 +83,13 @@ void SystemInit_clk(void)
 	FLASH->ACR |= FLASH_ACR_PRFTEN;
 }
 
+void IWDG_Init(void)
+{
+	hiwdg.Instance = IWDG;
+	hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
+	hiwdg.Init.Reload = 4095;  // 최대값 (약 26초 타임아웃)
+	HAL_IWDG_Init(&hiwdg);
+}
 
 void SystemClock_Config(void)
 {

@@ -24,6 +24,8 @@ OBJCOPY_BIN :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Fonts \
+Core/Image \
 Core/Src \
 Core/Startup \
 Core/bsp/Src \

@@ -1,0 +1,2 @@
+../Core/bsp/Src/bsp_eeprom_24xx.c:14:9:ee_ReadBytes	7
+../Core/bsp/Src/bsp_eeprom_24xx.c:80:9:ee_WriteBytes	10

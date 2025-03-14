@@ -5,7 +5,7 @@
  *      Author: compro
  */
 #include "bsp.h"
-//#include "fonts.h"
+#include "fonts.h"
 
 /* ÏÂÃæ3¸ö±äÁ¿£¬Ö÷ÒªÓÃÓÚÊ¹³ÌÐòÍ¬Ê±Ö§³Ö²»Í¬µÄÆÁ */
 uint16_t g_ChipID = IC_4001;		/* Çý¶¯Ð¾Æ¬ID */
@@ -52,7 +52,6 @@ void LCD_InitHard(void)
 		}
 	}
 	LCD_ClrScr(CL_BLUE);
-
 	LCD_SetBackLight(BRIGHT_DEFAULT);
 }
 
@@ -168,3 +167,195 @@ void LCD_SetBackLight(uint8_t _bright)
 		//SPFD5420_SetBackLight(_bright);
 	}
 }
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_DrawBMP
+*********************************************************************************************************
+*/
+void LCD_DrawBMP(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t *_ptr)
+{
+	if (g_ChipID == IC_8875)
+	{
+		RA8875_DrawBMP(_usX, _usY, _usHeight, _usWidth, _ptr);
+	}
+	else
+	{
+		//SPFD5420_DrawBMP(_usX, _usY, _usHeight, _usWidth, _ptr);
+	}
+}
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_DispStr
+*********************************************************************************************************
+*/
+void LCD_DispStr(uint16_t _usX, uint16_t _usY, char *_ptr, FONT_T *_tFont)
+{
+	uint32_t i;
+	uint8_t code1;
+	uint8_t code2;
+	uint32_t address;
+	uint8_t buf[24 * 24 / 8];	/* ×î´óÖ§³Ö24µãÕóºº×Ö */
+	uint8_t width;
+	uint16_t m;
+	uint8_t font_width,font_height, font_bytes;
+	uint16_t x, y;
+	const uint8_t *pAscDot;
+
+#ifdef USE_SMALL_FONT
+	const uint8_t *pHzDot;
+#else
+	uint32_t AddrHZK;
+#endif
+	if (_tFont->FontCode == FC_ST_12)
+	{
+		font_height = 12;
+		font_width = 12;
+		font_bytes = 24;
+		pAscDot = g_Ascii12;
+
+		#ifdef USE_SMALL_FONT
+			pHzDot = g_Hz12;
+		#else
+			AddrHZK = HZK12_ADDR;
+		#endif
+		}
+		else
+		{
+			font_height = 16;
+			font_width = 16;
+			font_bytes = 32;
+			pAscDot = g_Ascii16;
+
+		#ifdef USE_SMALL_FONT
+			pHzDot = g_Hz16;
+		#else
+			AddrHZK = HZK16_ADDR;
+		#endif
+		}
+
+		while (*_ptr != 0)
+		{
+			code1 = *_ptr;
+			if (code1 < 0x80)
+			{
+				memcpy(buf, &pAscDot[code1 * (font_bytes / 2)], (font_bytes / 2));
+				width = font_width / 2;
+			}
+			else
+			{
+				code2 = *++_ptr;
+				if (code2 == 0)
+				{
+					break;
+				}
+				#ifdef USE_SMALL_FONT
+					m = 0;
+					while(1)
+					{
+						address = m * (font_bytes + 2);
+						m++;
+						if ((code1 == pHzDot[address + 0]) && (code2 == pHzDot[address + 1]))
+						{
+							address += 2;
+							memcpy(buf, &pHzDot[address], font_bytes);
+							break;
+						}
+						else if ((pHzDot[address + 0] == 0xFF) && (pHzDot[address + 1] == 0xFF))
+						{
+							/* ×Ö¿âËÑË÷Íê±Ï£¬Î´ÕÒµ½£¬ÔòÌî³äÈ«FF */
+							memset(buf, 0xFF, font_bytes);
+							break;
+						}
+					}
+				#else	/* ÓÃÈ«×Ö¿â */
+					/* ´Ë´¦ÐèÒª¸ù¾Ý×Ö¿âÎÄ¼þ´æ·ÅÎ»ÖÃ½øÐÐÐÞ¸Ä */
+					if (code1 >=0xA1 && code1 <= 0xA9 && code2 >=0xA1)
+					{
+						address = ((code1 - 0xA1) * 94 + (code2 - 0xA1)) * font_bytes + AddrHZK;
+					}
+					else if (code1 >=0xB0 && code1 <= 0xF7 && code2 >=0xA1)
+					{
+						address = ((code1 - 0xB0) * 94 + (code2 - 0xA1) + 846) * font_bytes + AddrHZK;
+					}
+					memcpy(buf, (const uint8_t *)address, font_bytes);
+				#endif
+					width = font_width;
+			}
+			y = _usY;
+			/* ¿ªÊ¼Ë¢LCD */
+			for (m = 0; m < font_height; m++)	/* ×Ö·û¸ß¶È */
+			{
+				x = _usX;
+				for (i = 0; i < width; i++)	/* ×Ö·û¿í¶È */
+				{
+					if ((buf[m * ((2 * width) / font_width) + i / 8] & (0x80 >> (i % 8 ))) != 0x00)
+					{
+						LCD_PutPixel(x, y, _tFont->FrontColor);	/* ÉèÖÃÏñËØÑÕÉ«ÎªÎÄ×ÖÉ« */
+					}
+					else
+					{
+						if (_tFont->BackColor != CL_MASK)	/* Í¸Ã÷É« */
+						{
+							LCD_PutPixel(x, y, _tFont->BackColor);	/* ÉèÖÃÏñËØÑÕÉ«ÎªÎÄ×Ö±³¾°É« */
+						}
+					}
+					x++;
+				}
+				y++;
+			}
+
+			if (_tFont->Space > 0)
+			{
+				/* Èç¹ûÎÄ×Öµ×É«°´_tFont->usBackColor£¬²¢ÇÒ×Ö¼ä¾à´óÓÚµãÕóµÄ¿í¶È£¬ÄÇÃ´ÐèÒªÔÚÎÄ×ÖÖ®¼äÌî³ä(ÔÝÊ±Î´ÊµÏÖ) */
+			}
+			_usX += width + _tFont->Space;	/* ÁÐµØÖ·µÝÔö */
+			_ptr++;			/* Ö¸ÏòÏÂÒ»¸ö×Ö·û */
+		}
+}
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_PutPixel
+*********************************************************************************************************
+*/
+void LCD_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
+{
+	if (g_ChipID == IC_8875)
+	{
+		RA8875_PutPixel(_usX, _usY, _usColor);
+	}
+	else
+	{
+		//SPFD5420_PutPixel(_usX, _usY, _usColor);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

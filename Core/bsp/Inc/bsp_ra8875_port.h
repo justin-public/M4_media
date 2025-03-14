@@ -11,7 +11,13 @@
 //#define RA_SOFT_SPI	   	/* Èí¼þSPI½Ó¿ÚÄ£Ê½ */
 //#define RA_HARD_SPI	   	/* Ó²¼þSPI½Ó¿ÚÄ£Ê½ */
 //#define RA_SOFT_8080_8	/* Èí¼þÄ£Äâ8080½Ó¿Ú,8bit */
-#define RA_HARD_8080_16	/* Ó²¼þ8080½Ó¿Ú,16bit */
+#define RA_HARD_8080_16
+
+#define RA8875_BASE		((uint32_t)(0x6C000000 | 0x00000000))
+#define RA8875_REG		*(__IO uint16_t *)(RA8875_BASE +  (1 << (18 + 1)))	/* FSMC 16Î»×ÜÏßÄ£Ê½ÏÂ£¬FSMC_A18¿ÚÏß¶ÔÓ¦ÎïÀíµØÖ·A19 */
+#define RA8875_RAM		*(__IO uint16_t *)(RA8875_BASE)
+#define RA8875_RAM_ADDR		RA8875_BASE
+
 
 void RA8875_Delaly1us(void);
 void RA8875_Delaly1ms(void);

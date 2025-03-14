@@ -1,0 +1,2 @@
+../Core/Src/param.c:12:6:LoadParam	8	static
+../Core/Src/param.c:78:6:SaveParam	8	static

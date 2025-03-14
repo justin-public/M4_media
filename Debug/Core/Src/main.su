@@ -1,5 +1,6 @@
-../Core/Src/main.c:7:5:main	32	static
-../Core/Src/main.c:31:6:Delay_ms	16	static
-../Core/Src/main.c:36:6:SystemInit_clk	8	static
-../Core/Src/main.c:52:6:SystemClock_Config	88	static
-../Core/Src/main.c:157:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:14:5:main	16	static
+../Core/Src/main.c:64:6:Delay_ms	16	static
+../Core/Src/main.c:71:6:SystemInit_clk	8	static
+../Core/Src/main.c:86:6:IWDG_Init	8	static
+../Core/Src/main.c:94:6:SystemClock_Config	88	static
+../Core/Src/main.c:199:6:Error_Handler	4	static,ignoring_inline_asm

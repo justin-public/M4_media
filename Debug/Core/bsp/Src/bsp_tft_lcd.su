@@ -1,5 +1,8 @@
 ../Core/bsp/Src/bsp_tft_lcd.c:24:6:LCD_InitHard	16	static
-../Core/bsp/Src/bsp_tft_lcd.c:60:13:LCD_CtrlLinesConfig	48	static
-../Core/bsp/Src/bsp_tft_lcd.c:93:13:LCD_FSMCConfig	144	static
-../Core/bsp/Src/bsp_tft_lcd.c:140:6:LCD_ClrScr	16	static
-../Core/bsp/Src/bsp_tft_lcd.c:158:6:LCD_SetBackLight	16	static
+../Core/bsp/Src/bsp_tft_lcd.c:59:13:LCD_CtrlLinesConfig	48	static
+../Core/bsp/Src/bsp_tft_lcd.c:92:13:LCD_FSMCConfig	144	static
+../Core/bsp/Src/bsp_tft_lcd.c:139:6:LCD_ClrScr	16	static
+../Core/bsp/Src/bsp_tft_lcd.c:157:6:LCD_SetBackLight	16	static
+../Core/bsp/Src/bsp_tft_lcd.c:176:6:LCD_DrawBMP	32	static
+../Core/bsp/Src/bsp_tft_lcd.c:193:6:LCD_DispStr	128	static
+../Core/bsp/Src/bsp_tft_lcd.c:323:6:LCD_PutPixel	16	static
