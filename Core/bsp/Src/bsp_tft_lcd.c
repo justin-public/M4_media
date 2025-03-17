@@ -15,6 +15,7 @@ uint8_t s_ucBright;					/* ±³¹âÁÁ¶È²ÎÊý */
 
 static void LCD_CtrlLinesConfig(void);
 static void LCD_FSMCConfig(void);
+uint16_t Blend565(uint16_t src, uint16_t dst, uint8_t alpha);
 
 /*
 *********************************************************************************************************
@@ -332,12 +333,147 @@ void LCD_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
 	}
 }
 
+/*
+*********************************************************************************************************
+*	Func name: LCD_DrawIcon32
+*********************************************************************************************************
+*/
+void LCD_DrawIcon32(const ICON_T *_tIcon, FONT_T *_tFont, uint8_t _ucFocusMode)
+{
+	const uint8_t *p;
+	uint16_t usOldRGB, usNewRGB;
+	int16_t x, y;		/* ÓÃÓÚ¼ÇÂ¼´°¿ÚÄÚµÄÏà¶Ô×ø±ê */
+	uint8_t R1,G1,B1,A;	/* ÐÂÏñËØÉ«²Ê·ÖÁ¿ */
+	uint8_t R0,G0,B0;	/* ¾ÉÏñËØÉ«²Ê·ÖÁ¿ */
+
+	p = (const uint8_t *)_tIcon->pBmp;
+	p += 54;		/* Ö±½ÓÖ¸ÏòÍ¼ÏñÊý¾ÝÇø */
+
+	/* °´ÕÕBMPÎ»Í¼´ÎÐò£¬´Ó×óÖÁÓÒ£¬´ÓÉÏÖÁÏÂÉ¨Ãè */
+	for (y = _tIcon->Height - 1; y >= 0; y--)
+	{
+		for (x = 0; x < _tIcon->Width; x++)
+		{
+			B1 = *p++;
+			G1 = *p++;
+			R1 = *p++;
+			A = *p++;	/* Alpha Öµ(Í¸Ã÷¶È)£¬0-255, 0±íÊ¾Í¸Ã÷£¬1±íÊ¾²»Í¸Ã÷, ÖÐ¼äÖµ±íÊ¾Í¸Ã÷¶È */
+
+			if (A == 0x00)	/* ÐèÒªÍ¸Ã÷,ÏÔÊ¾±³¾° */
+			{
+				;	/* ²»ÓÃË¢ÐÂ±³¾° */
+			}
+			else if (A == 0xFF)	/* ÍêÈ«²»Í¸Ã÷£¬ ÏÔÊ¾ÐÂÏñËØ */
+			{
+				usNewRGB = RGB(R1, G1, B1);
+				if (_ucFocusMode == 1)
+				{
+					usNewRGB = Blend565(usNewRGB, CL_YELLOW, 10);
+				}
+				LCD_PutPixel(x + _tIcon->Left, y + _tIcon->Top, usNewRGB);
+			}
+			else 	/* °ëÍ¸Ã÷ */
+			{
+				/* ¼ÆËã¹«Ê½£º Êµ¼ÊÏÔÊ¾ÑÕÉ« = Ç°¾°ÑÕÉ« * Alpha / 255 + ±³¾°ÑÕÉ« * (255-Alpha) / 255 */
+				usOldRGB = LCD_GetPixel(x + _tIcon->Left, y + _tIcon->Top);
+				R0 = RGB565_R(usOldRGB);
+				G0 = RGB565_G(usOldRGB);
+				B0 = RGB565_B(usOldRGB);
+
+				R1 = (R1 * A) / 255 + R0 * (255 - A) / 255;
+				G1 = (G1 * A) / 255 + G0 * (255 - A) / 255;
+				B1 = (B1 * A) / 255 + B0 * (255 - A) / 255;
+				usNewRGB = RGB(R1, G1, B1);
+				if (_ucFocusMode == 1)
+				{
+					usNewRGB = Blend565(usNewRGB, CL_YELLOW, 10);
+				}
+				LCD_PutPixel(x + _tIcon->Left, y + _tIcon->Top, usNewRGB);
+			}
+		}
+	}
+
+	/* »æÖÆÍ¼±êÏÂµÄÎÄ×Ö */
+	{
+		uint16_t len;
+		uint16_t width;
+
+		len = strlen(_tIcon->Text);
+
+		if  (len == 0)
+		{
+			return;	/* Èç¹ûÍ¼±êÎÄ±¾³¤¶ÈÎª0£¬Ôò²»ÏÔÊ¾ */
+		}
+
+		/* ¼ÆËãÎÄ±¾µÄ×Ü¿í¶È */
+		if (_tFont->FontCode == FC_ST_12)		/* 12µãÕó */
+		{
+			width = 6 * (len + _tFont->Space);
+		}
+		else	/* FC_ST_16 */
+		{
+			width = 8 * (len + _tFont->Space);
+		}
 
 
+		/* Ë®Æ½¾ÓÖÐ */
+		x = (_tIcon->Left + _tIcon->Width / 2) - width / 2;
+		y = _tIcon->Top + _tIcon->Height + 2;
+		LCD_DispStr(x, y, (char *)_tIcon->Text, _tFont);
+	}
+}
 
 
+uint16_t Blend565(uint16_t src, uint16_t dst, uint8_t alpha)
+{
+	uint32_t src2;
+	uint32_t dst2;
+
+	src2 = ((src << 16) |src) & 0x07E0F81F;
+	dst2 = ((dst << 16) | dst) & 0x07E0F81F;
+	dst2 = ((((dst2 - src2) * alpha) >> 5) + src2) & 0x07E0F81F;
+	return (dst2 >> 16) | dst2;
+}
 
 
+/*
+*********************************************************************************************************
+*	Func name: LCD_GetPixel
+*********************************************************************************************************
+*/
+uint16_t LCD_GetPixel(uint16_t _usX, uint16_t _usY)
+{
+	uint16_t usRGB;
+	if (g_ChipID == IC_8875)
+	{
+		usRGB = RA8875_GetPixel(_usX, _usY);
+	}
+	else
+	{
+		//usRGB = SPFD5420_GetPixel(_usX, _usY);
+	}
+	return usRGB;
+}
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_GetHeight
+*********************************************************************************************************
+*/
+uint16_t LCD_GetHeight(void)
+{
+	return g_LcdHeight;
+}
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_GetWidth
+*********************************************************************************************************
+*/
+uint16_t LCD_GetWidth(void)
+{
+	return g_LcdWidth;
+}
 
 
 

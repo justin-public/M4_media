@@ -1,6 +1,6 @@
-../Core/Src/main.c:14:5:main	2
-../Core/Src/main.c:64:6:Delay_ms	1
-../Core/Src/main.c:71:6:SystemInit_clk	1
-../Core/Src/main.c:86:6:IWDG_Init	1
-../Core/Src/main.c:94:6:SystemClock_Config	3
-../Core/Src/main.c:199:6:Error_Handler	1
+../Core/Src/main.c:15:5:main	3
+../Core/Src/main.c:72:6:Delay_ms	1
+../Core/Src/main.c:79:6:SystemInit_clk	1
+../Core/Src/main.c:94:6:IWDG_Init	1
+../Core/Src/main.c:102:6:SystemClock_Config	3
+../Core/Src/main.c:207:6:Error_Handler	1

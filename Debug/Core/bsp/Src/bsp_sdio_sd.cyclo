@@ -1,0 +1,2 @@
+../Core/bsp/Src/bsp_sdio_sd.c:9:10:SD_Init	1
+../Core/bsp/Src/bsp_sdio_sd.c:21:6:SDIO_Interrupts_Config	1

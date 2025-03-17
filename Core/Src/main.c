@@ -1,6 +1,7 @@
 #include "bsp.h"
 #include "param.h"
 #include "main_menu.h"
+#include "hard_test.h"
 
 
 void SystemInit_clk(void);
@@ -17,7 +18,7 @@ int main(void)
 
 	HAL_Init();
 	SystemInit_clk();
-	IWDG_Init();
+	//IWDG_Init();
 
 	bsp_Init();
 
@@ -25,14 +26,15 @@ int main(void)
 
 	LCD_InitHard();
 
-	//LCD_ClrScr(CL_YELLOW);
-	//LCD_SetBackLight(g_tParam.ucBackLight);
+	TOUCH_InitHard();
+
+	LCD_ClrScr(CL_YELLOW);
+	LCD_SetBackLight(g_tParam.ucBackLight);
 
 	// 변수 선언
 #if 0
-	char message[] = "Hello, UART1!\r\n";
+	char msg[] = "Hello, UART1!\r\n";
 	HAL_StatusTypeDef status;
-	ucStatus = MS_MAIN_MENU;
 #endif
 	ucStatus = MS_MAIN_MENU;
 	while (1)
@@ -41,7 +43,13 @@ int main(void)
 		switch (ucStatus)
 		{
 			case MS_MAIN_MENU:
-				ucStatus = MainMenu();		/* Ö÷½çÃæ×´Ì¬ */
+				ucStatus = MainMenu();
+			break;
+			case MS_HARDWARE_INFO:
+				HardInfo();
+				ucStatus = MS_MAIN_MENU;
+			break;
+			default:
 			break;
 		}
 #endif

@@ -16,6 +16,7 @@ RM := rm -rf
 -include Core/Src/subdir.mk
 -include Core/Image/subdir.mk
 -include Core/Fonts/subdir.mk
+-include Core/FatFS/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)

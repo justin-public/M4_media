@@ -12,3 +12,4 @@
 ../Core/bsp/Src/bsp_key.c:152:13:bsp_InitKeyVar	16	static
 ../Core/bsp/Src/bsp_key.c:207:13:bsp_InitKeyHard	48	static
 ../Core/bsp/Src/bsp_key.c:252:9:bsp_GetKey2	16	static
+../Core/bsp/Src/bsp_key.c:277:9:bsp_GetKey	16	static

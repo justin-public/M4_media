@@ -122,24 +122,24 @@ extern const unsigned char acchujiao[48 * 48 * 4];
 #if 1
 static const ICON_T s_tMainIcons[ICONS_COUNT] =
 {	
-	{ID_ICON, ICON1_X, ICON1_Y, ICON1_H, ICON1_W, (uint16_t *)achwinfo, "Ó²¼þÐÅÏ¢"},
-	{ID_ICON, ICON2_X, ICON2_Y, ICON2_H, ICON2_W, (uint16_t *)acLCD, "´¥ÃþÆÁºÍ°´¼ü"},
-	{ID_ICON, ICON3_X, ICON3_Y, ICON3_H, ICON3_W, (uint16_t *)acRadio, "ÊÕÒô»ú"},
-	{ID_ICON, ICON4_X, ICON4_Y, ICON4_H, ICON4_W, (uint16_t *)acRecorder, "Â¼Òô»ú"},
-	{ID_ICON, ICON5_X, ICON5_Y, ICON5_H, ICON5_W, (uint16_t *)acchujiao, "MEMS´«¸ÐÆ÷"},
-	{ID_ICON, ICON6_X, ICON6_Y, ICON6_H, ICON6_W, (uint16_t *)acweb, "WEB·þÎñÆ÷"},
-	{ID_ICON, ICON7_X, ICON7_Y, ICON7_H, ICON7_W, (uint16_t *)acGPS, "GPS¶¨Î»Ä£¿é"},
-	{ID_ICON, ICON8_X, ICON8_Y, ICON8_H, ICON8_W, (uint16_t *)acPhone, "GPRSÄ£¿é"},
-	{ID_ICON, ICON9_X, ICON9_Y, ICON9_H, ICON9_W, (uint16_t *)acMP3, "MP3Ä£¿é"},
-	{ID_ICON, ICON10_X, ICON10_Y, ICON10_H, ICON10_W, (uint16_t *)acUSBDisk, "Ä£ÄâUÅÌ"},
-	{ID_ICON, ICON11_X, ICON11_Y, ICON11_H, ICON11_W, (uint16_t *)acADC, "AD7606Ä£¿é"},	
-	{ID_ICON, ICON12_X, ICON12_Y, ICON12_H, ICON12_W, (uint16_t *)acCamera, "ÉãÏñÍ·"},	
-	{ID_ICON, ICON13_X, ICON13_Y, ICON13_H, ICON13_W, (uint16_t *)acChiLun, "OLEDÏÔÊ¾Æ÷"},	
-	{ID_ICON, ICON14_X, ICON14_Y, ICON14_H, ICON14_W, (uint16_t *)acWireless, "nRF24L01+"},
-	{ID_ICON, ICON15_X, ICON15_Y, ICON15_H, ICON15_W, (uint16_t *)acWireless, "nRF905(433M)"},	
-	{ID_ICON, ICON16_X, ICON16_Y, ICON16_H, ICON16_W, (uint16_t *)acChiLun, "RS485Í¨ÐÅ"},	
-	{ID_ICON, ICON17_X, ICON17_Y, ICON17_H, ICON17_W, (uint16_t *)acChiLun, "CANÍ¨ÐÅ"},	
-	{ID_ICON, ICON18_X, ICON18_Y, ICON18_H, ICON18_W, (uint16_t *)acChiLun, "RA8875×Ö¿â"},	
+	{ID_ICON, ICON1_X, ICON1_Y, ICON1_H, ICON1_W, (uint16_t *)achwinfo, "HW info"},
+	{ID_ICON, ICON2_X, ICON2_Y, ICON2_H, ICON2_W, (uint16_t *)acLCD, "LCD"},
+	{ID_ICON, ICON3_X, ICON3_Y, ICON3_H, ICON3_W, (uint16_t *)acRadio, "Radio"},
+	{ID_ICON, ICON4_X, ICON4_Y, ICON4_H, ICON4_W, (uint16_t *)acRecorder, "REC"},
+	{ID_ICON, ICON5_X, ICON5_Y, ICON5_H, ICON5_W, (uint16_t *)acchujiao, "MEMS"},
+	{ID_ICON, ICON6_X, ICON6_Y, ICON6_H, ICON6_W, (uint16_t *)acweb, "WEB"},
+	{ID_ICON, ICON7_X, ICON7_Y, ICON7_H, ICON7_W, (uint16_t *)acGPS, "GPS"},
+	{ID_ICON, ICON8_X, ICON8_Y, ICON8_H, ICON8_W, (uint16_t *)acPhone, "GPRS"},
+	{ID_ICON, ICON9_X, ICON9_Y, ICON9_H, ICON9_W, (uint16_t *)acMP3, "MP3"},
+	{ID_ICON, ICON10_X, ICON10_Y, ICON10_H, ICON10_W, (uint16_t *)acUSBDisk, "USB"},
+	{ID_ICON, ICON11_X, ICON11_Y, ICON11_H, ICON11_W, (uint16_t *)acADC, "AD7606"},
+	{ID_ICON, ICON12_X, ICON12_Y, ICON12_H, ICON12_W, (uint16_t *)acCamera, "Camera"},
+	{ID_ICON, ICON13_X, ICON13_Y, ICON13_H, ICON13_W, (uint16_t *)acChiLun, "OLED"},
+	{ID_ICON, ICON14_X, ICON14_Y, ICON14_H, ICON14_W, (uint16_t *)acWireless, "nRF24L01"},
+	{ID_ICON, ICON15_X, ICON15_Y, ICON15_H, ICON15_W, (uint16_t *)acWireless, "nRF905"},
+	{ID_ICON, ICON16_X, ICON16_Y, ICON16_H, ICON16_W, (uint16_t *)acChiLun, "RS485"},
+	{ID_ICON, ICON17_X, ICON17_Y, ICON17_H, ICON17_W, (uint16_t *)acChiLun, "CAN"},
+	{ID_ICON, ICON18_X, ICON18_Y, ICON18_H, ICON18_W, (uint16_t *)acChiLun, "RA8875"},
 };
 #endif
 
@@ -257,8 +257,120 @@ uint8_t MainMenu(void)
 	while(1)
 	{
 		bsp_Idle();
+		if (fRefresh)
+		{
+			fRefresh = 0;
+			{
+				for (i = 0; i < ICONS_COUNT; i++)
+				{
+					LCD_DrawIcon32(&s_tMainIcons[i], &tIconFont, 0);
+				}
+			}
+		}
+		ucTouch = TOUCH_GetKey(&tpX, &tpY);
+		if(ucTouch != TOUCH_NONE)
+		{
+			switch (ucTouch)
+			{
+				case TOUCH_DOWN:		/* ´¥±Ê°´ÏÂÊÂ¼þ */
+				{
+					for (i = 0; i < ICONS_COUNT; i++)
+					{
+						if (TOUCH_InRect(tpX, tpY, s_tMainIcons[i].Left, s_tMainIcons[i].Top,
+							s_tMainIcons[i].Height, s_tMainIcons[i].Width))
+						{
+							LCD_DrawIcon32(&s_tMainIcons[i], &tIconFont, 1);
+						}
+					}
+				}
+				break;
+				case TOUCH_MOVE:		/* ´¥±ÊÒÆ¶¯ÊÂ¼þ */
+					break;
+				case TOUCH_RELEASE:
+					for (i = 0; i < ICONS_COUNT; i++)
+					{
+						if (TOUCH_InRect(tpX, tpY, s_tMainIcons[i].Left, s_tMainIcons[i].Top,
+							s_tMainIcons[i].Height, s_tMainIcons[i].Width))
+						{
+							return s_RetStatus[i];
+						}
+					}
+					{
+						for (i = 0; i < ICONS_COUNT; i++)
+						{
+							LCD_DrawIcon32(&s_tMainIcons[i], &tIconFont, 0);
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		ucKeyCode = bsp_GetKey();	/* ¶ÁÈ¡¼üÖµ, ÎÞ¼ü°´ÏÂÊ±·µ»Ø KEY_NONE = 0 */
+		if (ucKeyCode != KEY_NONE)
+		{
+			switch (ucKeyCode)
+			{
+				case  KEY_DOWN_K3:	/* K3¼ü */
+					return MS_CALIBRATION;	/* ½øÈë´¥Ãþ½çÃæ */
+					//break;
+				case  KEY_DOWN_K1:	/* K1¼ü */
+					if (++s_ColorIndex >= STYLE_COUNT)
+					{
+						s_ColorIndex = 0;
+					}
+					{
+						DispBackground();
+						{
+							tFont.FontCode = FC_ST_16;	/* ×ÖÌå´úÂë 16µãÕó */
+							tFont.FrontColor = MAIN_TEXT_COLOR;	/* ×ÖÌåÑÕÉ« */
+							tFont.BackColor = CL_MASK;	/* ÎÄ×Ö±³¾°ÑÕÉ« */
+							tFont.Space = 0;				/* ÎÄ×Ö¼ä¾à£¬µ¥Î» = ÏñËØ */
+
+							tIconFont.FontCode = FC_ST_12;		/* ×ÖÌå´úÂë 16µãÕó */
+							tIconFont.FrontColor = MAIN_TEXT_COLOR;	/* ×ÖÌåÑÕÉ« */
+							tIconFont.BackColor = CL_MASK;		/* ÎÄ×Ö±³¾°ÑÕÉ« */
+							tIconFont.Space = 1;				/* ÎÄ×Ö¼ä¾à£¬µ¥Î» = ÏñËØ */
+						}
+						LCD_DispStr(5, 3, VER_INFO, &tFont);			/* ÔÚ(8,3)×ø±ê´¦ÏÔÊ¾Ò»´®ºº×Ö */
+						LCD_DispStr(5, g_LcdHeight - 13, KEY_INFO, &tIconFont);			/* ÔÚ(8,3)×ø±ê´¦ÏÔÊ¾Ò»´®ºº×Ö */
+					}
+					fRefresh = 1;
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 *********************************************************************************************************

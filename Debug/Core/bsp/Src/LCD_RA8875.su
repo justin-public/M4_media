@@ -15,3 +15,7 @@
 ../Core/bsp/Src/LCD_RA8875.c:581:13:BTE_Start	8	static
 ../Core/bsp/Src/LCD_RA8875.c:595:13:BTE_Wait	8	static
 ../Core/bsp/Src/LCD_RA8875.c:609:6:RA8875_SetBackLight	16	static
+../Core/bsp/Src/LCD_RA8875.c:679:10:RA8875_GetPixel	24	static
+../Core/bsp/Src/LCD_RA8875.c:704:13:RA8875_SetReadCursor	16	static
+../Core/bsp/Src/LCD_RA8875.c:717:10:RA8875_ReadData16	16	static
+../Core/bsp/Src/LCD_RA8875.c:746:6:RA8875_TouchInit	8	static

@@ -1,0 +1,4 @@
+../Core/bsp/Src/bsp_touch.c:96:6:TOUCH_InitHard	8	static
+../Core/bsp/Src/bsp_touch.c:120:13:TOUCH_LoadParam	8	static
+../Core/bsp/Src/bsp_touch.c:143:9:TOUCH_GetKey	24	static
+../Core/bsp/Src/bsp_touch.c:170:9:TOUCH_InRect	16	static

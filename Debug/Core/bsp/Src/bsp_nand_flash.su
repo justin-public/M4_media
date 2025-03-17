@@ -1,0 +1,2 @@
+../Core/bsp/Src/bsp_nand_flash.c:44:13:BSP_FSMC_NAND_Init	144	static
+../Core/bsp/Src/bsp_nand_flash.c:149:9:NAND_Init	8	static

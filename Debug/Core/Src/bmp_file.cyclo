@@ -1,0 +1,2 @@
+../Core/Src/bmp_file.c:38:13:MakeBmpHeader	1
+../Core/Src/bmp_file.c:67:6:SaveScreenToBmp	1
