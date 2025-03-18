@@ -11,3 +11,5 @@
 ../Core/bsp/Src/bsp_tft_lcd.c:444:10:LCD_GetPixel	24	static
 ../Core/bsp/Src/bsp_tft_lcd.c:463:10:LCD_GetHeight	4	static
 ../Core/bsp/Src/bsp_tft_lcd.c:473:10:LCD_GetWidth	4	static
+../Core/bsp/Src/bsp_tft_lcd.c:483:6:LCD_DrawRect	32	static
+../Core/bsp/Src/bsp_tft_lcd.c:500:6:LCD_DrawCircle	24	static

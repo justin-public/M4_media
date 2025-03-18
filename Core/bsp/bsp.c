@@ -9,13 +9,15 @@
 void bsp_Init(void)
 {
 	bsp_InitUart();
-	bsp_InitLed();
-	bsp_InitKey();
+	//bsp_InitLed();
+	//bsp_InitKey();
 
-	bsp_InitExtSRAM();
+	//bsp_InitExtSRAM();
+	//bsp_InitNorFlash();	/* ³õÊ¼»¯FSMC NOR Flash */
+	bsp_InitSFlash();       // nand flash
 
-	bsp_InitI2C();
-	bsp_InitTimer();
+	//bsp_InitI2C();
+	//bsp_InitTimer();
 
 	//bsp_DelayMS(20);
 	HAL_Delay(20);

@@ -267,6 +267,7 @@ uint8_t MainMenu(void)
 				}
 			}
 		}
+#if 1
 		ucTouch = TOUCH_GetKey(&tpX, &tpY);
 		if(ucTouch != TOUCH_NONE)
 		{
@@ -306,12 +307,27 @@ uint8_t MainMenu(void)
 					break;
 			}
 		}
+#endif
+		//UART1_Transmit_String("D0");
+		//int keynum = IsKeyDown1();
+		//char msg[20];
+		//sprintf(msg, "K1 value: %d\r\n", keynum);
+		//UART1_Transmit_String(msg);
+		//HAL_Delay(500);
+		bsp_KeyScan();  // 키 상태 스캔
 		ucKeyCode = bsp_GetKey();	/* ¶ÁÈ¡¼üÖµ, ÎÞ¼ü°´ÏÂÊ±·µ»Ø KEY_NONE = 0 */
+
+		//char msg1[50];
+		//sprintf(msg1, "Keycode value: %d\r\n", ucKeyCode);
+		//UART1_Transmit_String(msg1);
+		//HAL_Delay(50);
+
 		if (ucKeyCode != KEY_NONE)
 		{
 			switch (ucKeyCode)
 			{
 				case  KEY_DOWN_K3:	/* K3¼ü */
+					//bsp_LedOn(1);
 					return MS_CALIBRATION;	/* ½øÈë´¥Ãþ½çÃæ */
 					//break;
 				case  KEY_DOWN_K1:	/* K1¼ü */

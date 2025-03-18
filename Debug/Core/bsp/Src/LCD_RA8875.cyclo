@@ -19,3 +19,6 @@
 ../Core/bsp/Src/LCD_RA8875.c:704:13:RA8875_SetReadCursor	1
 ../Core/bsp/Src/LCD_RA8875.c:717:10:RA8875_ReadData16	1
 ../Core/bsp/Src/LCD_RA8875.c:746:6:RA8875_TouchInit	1
+../Core/bsp/Src/LCD_RA8875.c:760:6:RA8875_DrawRect	1
+../Core/bsp/Src/LCD_RA8875.c:789:6:RA8875_WaitBusy	2
+../Core/bsp/Src/LCD_RA8875.c:799:6:RA8875_DrawCircle	2

@@ -1,4 +1,13 @@
-../Core/bsp/Src/bsp_touch.c:96:6:TOUCH_InitHard	8	static
-../Core/bsp/Src/bsp_touch.c:120:13:TOUCH_LoadParam	8	static
-../Core/bsp/Src/bsp_touch.c:143:9:TOUCH_GetKey	24	static
-../Core/bsp/Src/bsp_touch.c:170:9:TOUCH_InRect	16	static
+../Core/bsp/Src/bsp_touch.c:100:6:TOUCH_InitHard	8	static
+../Core/bsp/Src/bsp_touch.c:124:13:TOUCH_LoadParam	8	static
+../Core/bsp/Src/bsp_touch.c:147:9:TOUCH_GetKey	24	static
+../Core/bsp/Src/bsp_touch.c:174:9:TOUCH_InRect	16	static
+../Core/bsp/Src/bsp_touch.c:193:6:TOUCH_Calibration	32	static
+../Core/bsp/Src/bsp_touch.c:280:6:TOUCH_CelarFIFO	16	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_touch.c:292:13:TOUCH_DispPoint	40	static
+../Core/bsp/Src/bsp_touch.c:336:13:TOUCH_WaitRelease	24	static
+../Core/bsp/Src/bsp_touch.c:366:16:TOUCH_PressValid	16	static
+../Core/bsp/Src/bsp_touch.c:385:10:TOUCH_ReadAdcX	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_touch.c:401:10:TOUCH_ReadAdcY	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_touch.c:417:9:TOUCH_Abs	16	static
+../Core/bsp/Src/bsp_touch.c:435:13:TOUCH_SaveParam	8	static

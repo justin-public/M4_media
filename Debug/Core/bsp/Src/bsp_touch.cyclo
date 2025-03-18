@@ -1,4 +1,13 @@
-../Core/bsp/Src/bsp_touch.c:96:6:TOUCH_InitHard	2
-../Core/bsp/Src/bsp_touch.c:120:13:TOUCH_LoadParam	1
-../Core/bsp/Src/bsp_touch.c:143:9:TOUCH_GetKey	3
-../Core/bsp/Src/bsp_touch.c:170:9:TOUCH_InRect	5
+../Core/bsp/Src/bsp_touch.c:100:6:TOUCH_InitHard	2
+../Core/bsp/Src/bsp_touch.c:124:13:TOUCH_LoadParam	1
+../Core/bsp/Src/bsp_touch.c:147:9:TOUCH_GetKey	3
+../Core/bsp/Src/bsp_touch.c:174:9:TOUCH_InRect	5
+../Core/bsp/Src/bsp_touch.c:193:6:TOUCH_Calibration	12
+../Core/bsp/Src/bsp_touch.c:280:6:TOUCH_CelarFIFO	1
+../Core/bsp/Src/bsp_touch.c:292:13:TOUCH_DispPoint	4
+../Core/bsp/Src/bsp_touch.c:336:13:TOUCH_WaitRelease	3
+../Core/bsp/Src/bsp_touch.c:366:16:TOUCH_PressValid	5
+../Core/bsp/Src/bsp_touch.c:385:10:TOUCH_ReadAdcX	1
+../Core/bsp/Src/bsp_touch.c:401:10:TOUCH_ReadAdcY	1
+../Core/bsp/Src/bsp_touch.c:417:9:TOUCH_Abs	2
+../Core/bsp/Src/bsp_touch.c:435:13:TOUCH_SaveParam	1

@@ -1,2 +1,2 @@
 ../Core/Src/main_menu.c:228:9:MainMenu	64	static
-../Core/Src/main_menu.c:380:13:DispBackground	16	static
+../Core/Src/main_menu.c:396:13:DispBackground	16	static

@@ -475,7 +475,39 @@ uint16_t LCD_GetWidth(void)
 	return g_LcdWidth;
 }
 
+/*
+*********************************************************************************************************
+*	Func name: LCD_DrawRect
+*********************************************************************************************************
+*/
+void LCD_DrawRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
+{
+	if (g_ChipID == IC_8875)
+	{
+		RA8875_DrawRect(_usX, _usY, _usHeight, _usWidth, _usColor);
+	}
+	else
+	{
+		//SPFD5420_DrawRect(_usX, _usY, _usHeight, _usWidth, _usColor);
+	}
+}
 
+/*
+*********************************************************************************************************
+*	Func name: LCD_DrawCircle
+*********************************************************************************************************
+*/
+void LCD_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_t _usColor)
+{
+	if (g_ChipID == IC_8875)
+	{
+		RA8875_DrawCircle(_usX, _usY, _usRadius, _usColor);
+	}
+	else
+	{
+		//SPFD5420_DrawCircle(_usX, _usY, _usRadius, _usColor);
+	}
+}
 
 
 

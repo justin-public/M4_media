@@ -1,0 +1,7 @@
+../Core/bsp/Src/bsp_spi_flash.c:115:6:bsp_InitSFlash	40	static
+../Core/bsp/Src/bsp_spi_flash.c:205:13:bsp_CfgSPIForSFlash	104	static
+../Core/bsp/Src/bsp_spi_flash.c:239:6:sf_ReadInfo	40	static
+../Core/bsp/Src/bsp_spi_flash.c:284:10:sf_ReadID	16	static
+../Core/bsp/Src/bsp_spi_flash.c:306:16:sf_SendByte	32	static
+../Core/bsp/Src/bsp_spi_flash.c:337:13:sf_WaitForWriteEnd	8	static
+../Core/bsp/Src/bsp_spi_flash.c:350:13:sf_WriteStatus	16	static

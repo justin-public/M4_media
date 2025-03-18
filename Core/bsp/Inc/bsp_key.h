@@ -8,6 +8,32 @@
 #ifndef BSP_INC_BSP_KEY_H_
 #define BSP_INC_BSP_KEY_H_
 
+#if 0
+#define GPIO_PORT_K1    GPIOI
+#define GPIO_PIN_K1	    GPIO_PIN_8
+
+#define GPIO_PORT_K2    GPIOC
+#define GPIO_PIN_K2	    GPIO_PIN_13
+
+#define GPIO_PORT_K3    GPIOI
+#define GPIO_PIN_K3	    GPIO_PIN_11
+
+#define GPIO_PORT_K4    GPIOH
+#define GPIO_PIN_K4	    GPIO_PIN_2
+
+#define GPIO_PORT_K5    GPIOH
+#define GPIO_PIN_K5	    GPIO_PIN_3
+
+#define GPIO_PORT_K6    GPIOF
+#define GPIO_PIN_K6	    GPIO_PIN_11
+
+#define GPIO_PORT_K7    GPIOG
+#define GPIO_PIN_K7	    GPIO_PIN_7
+
+#define GPIO_PORT_K8    GPIOH
+#define GPIO_PIN_K8	    GPIO_PIN_15
+#endif
+
 #define KEY_COUNT    10	   					/* °´¼ü¸öÊý, 8¸ö¶ÀÁ¢½¨ + 2¸ö×éºÏ¼ü */
 
 /* ¸ù¾ÝÓ¦ÓÃ³ÌÐòµÄ¹¦ÄÜÖØÃüÃû°´¼üºê */
@@ -151,6 +177,9 @@ typedef struct
 	uint8_t Read2;					/* »º³åÇø¶ÁÖ¸Õë2 */
 }KEY_FIFO_T;
 
+//static KEY_T s_tBtn[KEY_COUNT];
+//static KEY_FIFO_T s_tKey;		/* °´¼üFIFO±äÁ¿,½á¹¹Ìå */
+
 /* ¹©Íâ²¿µ÷ÓÃµÄº¯ÊýÉùÃ÷ */
 void bsp_InitKey(void);
 void bsp_KeyScan(void);
@@ -158,5 +187,7 @@ void bsp_PutKey(uint8_t _KeyCode);
 uint8_t bsp_GetKey(void);
 uint8_t bsp_GetKey2(void);
 uint8_t bsp_GetKeyState(KEY_ID_E _ucKeyID);
+
+//uint8_t IsKeyDown1(void);
 
 #endif /* BSP_INC_BSP_KEY_H_ */

@@ -752,7 +752,73 @@ void RA8875_TouchInit(void)
 	RA8875_WriteReg(0x70, (1 << 7) | (3 << 4) | (0 << 3) | (2 << 0));
 }
 
+/*
+*********************************************************************************************************
+* Func name: RA8875_DrawRect
+*********************************************************************************************************
+*/
+void RA8875_DrawRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
+{
+	RA8875_WriteReg(0x91, _usX);
+	RA8875_WriteReg(0x92, _usX >> 8);
+	RA8875_WriteReg(0x93, _usY);
+	RA8875_WriteReg(0x94, _usY >> 8);
 
+	/* ÉèÖÃÖÕµã×ø±ê */
+	RA8875_WriteReg(0x95, _usX + _usWidth - 1);
+	RA8875_WriteReg(0x96, (_usX + _usWidth - 1) >> 8);
+	RA8875_WriteReg(0x97, _usY + _usHeight - 1);
+	RA8875_WriteReg(0x98, (_usY + _usHeight - 1) >> 8);
+
+	RA8875_SetFrontColor(_usColor);	/* ÉèÖÃÑÕÉ« */
+
+	s_ucRA8875Busy = 1;
+	//	RA8875_WriteReg(0x90, (1 << 7) | (0 << 5) | (1 << 4) | (0 << 0));	/* ¿ªÊ¼»­¾ØÐÎ  */
+	RA8875_WriteCmd(0x90);
+	RA8875_WriteData((1 << 7) | (0 << 5) | (1 << 4) | (0 << 0));
+	//	while (RA8875_ReadReg(0x90) & (1 << 7));							/* µÈ´ý½áÊø */
+	RA8875_WaitBusy();
+	s_ucRA8875Busy = 0;
+}
+
+/*
+*********************************************************************************************************
+* Func name: RA8875_WaitBusy
+*********************************************************************************************************
+*/
+void RA8875_WaitBusy(void)
+{
+	while ((RA8875_ReadStatus() & 0x80) == 0x80);
+}
+
+/*
+*********************************************************************************************************
+*	Func name: RA8875_DrawCircle
+*********************************************************************************************************
+*/
+void RA8875_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_t _usColor)
+{
+	if (_usRadius > 255)
+	{
+		return;
+	}
+	RA8875_WriteReg(0x99, _usX);
+	RA8875_WriteReg(0x9A, _usX >> 8);
+	RA8875_WriteReg(0x9B, _usY);
+	RA8875_WriteReg(0x9C, _usY >> 8);
+
+	RA8875_WriteReg(0x9D, _usRadius);	/* ÉèÖÃÔ²µÄ°ë¾¶ */
+
+	RA8875_SetFrontColor(_usColor);	/* ÉèÖÃÑÕÉ« */
+
+	s_ucRA8875Busy = 1;
+	//	RA8875_WriteReg(0x90, (1 << 6) | (0 << 5));				/* ¿ªÊ¼»­Ô², ²»Ìî³ä  */
+	RA8875_WriteCmd(0x90);
+	RA8875_WriteData( (1 << 6) | (0 << 5));
+	//	while (RA8875_ReadReg(0x90) & (1 << 6));				/* µÈ´ý½áÊø */
+	RA8875_WaitBusy();
+	s_ucRA8875Busy = 0;
+}
 
 
 
