@@ -1,1 +1,2 @@
 ../Core/bsp/Src/bsp_fsmc_sram.c:15:6:bsp_InitExtSRAM	184	static
+../Core/bsp/Src/bsp_fsmc_sram.c:149:9:bsp_TestExtSRAM	32	static

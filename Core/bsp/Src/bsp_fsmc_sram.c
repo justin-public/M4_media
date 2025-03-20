@@ -141,7 +141,89 @@ void bsp_InitExtSRAM(void)
 	HAL_SRAM_Init(&hnorsram, &timingRead, &timingWrite);
 }
 
+/*
+*********************************************************************************************************
+*	Func name: bsp_TestExtSRAM
+*********************************************************************************************************
+*/
+uint8_t bsp_TestExtSRAM(void)
+{
+	uint32_t i;
+	uint32_t *pSRAM;
+	uint8_t *pBytes;
+	uint32_t err;
+	const uint8_t ByteBuf[4] = {0x55, 0xA5, 0x5A, 0xAA};
 
+	/* Ð´SRAM */
+	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
+	{
+		*pSRAM++ = i;
+	}
+
+	/* ¶ÁSRAM */
+	err = 0;
+	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
+	{
+		if (*pSRAM++ != i)
+		{
+			err++;
+		}
+	}
+
+	if (err >  0)
+	{
+		return  (4 * err);
+	}
+
+	/* ¶ÔSRAM µÄÊý¾ÝÇó·´²¢Ð´Èë */
+	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
+	{
+		*pSRAM = ~*pSRAM;
+		pSRAM++;
+	}
+
+	/* ÔÙ´Î±È½ÏSRAMµÄÊý¾Ý */
+	err = 0;
+	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
+	{
+		if (*pSRAM++ != (~i))
+		{
+			err++;
+		}
+	}
+
+	if (err >  0)
+	{
+		return (4 * err);
+	}
+
+	/* ²âÊÔ°´×Ö½Ú·½Ê½·ÃÎÊ, Ä¿µÄÊÇÑéÖ¤ FSMC_NBL0 ¡¢ FSMC_NBL1 ¿ÚÏß */
+	pBytes = (uint8_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < sizeof(ByteBuf); i++)
+	{
+		*pBytes++ = ByteBuf[i];
+	}
+
+	/* ±È½ÏSRAMµÄÊý¾Ý */
+	err = 0;
+	pBytes = (uint8_t *)EXT_SRAM_ADDR;
+	for (i = 0; i < sizeof(ByteBuf); i++)
+	{
+		if (*pBytes++ != ByteBuf[i])
+		{
+			err++;
+		}
+	}
+	if (err >  0)
+	{
+		return err;
+	}
+	return 0;
+}
 
 
 

@@ -1,4 +1,4 @@
-Core/Src/hart_test.o: ../Core/Src/hart_test.c ../Core/bsp/bsp.h \
+Core/Src/hard_test.o: ../Core/Src/hard_test.c ../Core/bsp/bsp.h \
  ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \

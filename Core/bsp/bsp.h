@@ -26,6 +26,14 @@
 #define ENABLE_INT()	__set_PRIMASK(0)	/* Ê¹ÄÜÈ«¾ÖÖÐ¶Ï */
 #define DISABLE_INT()	__set_PRIMASK(1)	/* ½ûÖ¹È«¾ÖÖÐ¶Ï */
 
+//#define DISABLE_INT() __disable_irq()
+//#define ENABLE_INT() __enable_irq()
+
+
+
+
+
+
 /* Õâ¸öºê½öÓÃÓÚµ÷ÊÔ½×¶ÎÅÅ´í */
 #define BSP_Printf		printf
 //#define BSP_Printf(...)

@@ -1,4 +1,12 @@
 ../Drivers/CMSIS/Include/core_cm4.h:1816:22:__NVIC_SetPriority	16	static
 ../Drivers/CMSIS/Include/core_cm4.h:2022:26:SysTick_Config	16	static
-../Core/bsp/Src/bsp_timer.c:29:6:bsp_InitTimer	16	static
-../Core/bsp/Src/bsp_timer.c:48:6:bsp_DelayMS	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_timer.c:32:6:bsp_InitTimer	16	static
+../Core/bsp/Src/bsp_timer.c:70:6:SysTick_ISR	16	static
+../Core/bsp/Src/bsp_timer.c:115:13:bsp_SoftTimerDec	16	static
+../Core/bsp/Src/bsp_timer.c:141:6:bsp_DelayMS	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_timer.c:182:6:bsp_DelayUS	40	static
+../Core/bsp/Src/bsp_timer.c:232:6:bsp_StartTimer	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_timer.c:260:6:bsp_StartAutoTimer	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_timer.c:287:6:bsp_StopTimer	24	static,ignoring_inline_asm
+../Core/bsp/Src/bsp_timer.c:314:9:bsp_CheckTimer	16	static
+../Core/bsp/Src/bsp_timer.c:340:9:bsp_GetRunTime	24	static,ignoring_inline_asm

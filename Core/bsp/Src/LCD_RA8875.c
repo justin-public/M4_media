@@ -745,12 +745,59 @@ uint16_t RA8875_ReadData16(void)
 */
 void RA8875_TouchInit(void)
 {
+	// 터치 인터럽트 활성화 (0xF0 레지스터의 비트 2 설정)
 	RA8875_WriteReg(0xF0, (1 << 2));
 
+	// TPCR1 설정: 자동 모드, 내부 참조 전압, 디바운스 활성화
 	RA8875_WriteReg(0x71, (0 << 6) | (0 << 5) | (1 << 2));
 
+	// TPCR0 설정: 터치 활성화, ADC 샘플링 = 4096, X축 데이터 획득 모드
 	RA8875_WriteReg(0x70, (1 << 7) | (3 << 4) | (0 << 3) | (2 << 0));
+
 }
+
+void TOUCH_Poll(void) {
+    uint8_t touched;
+    uint16_t x, y;
+
+    // 터치 상태 및 X좌표 읽기 (TPCR0 모드가 2이므로 X축 데이터가 저장됨)
+    touched = RA8875_ReadReg(0x72) & 0x01;
+
+    char debug_str[50];
+    sprintf(debug_str, "Touch: %d\r\n", touched);
+    UART1_Transmit_String(debug_str);
+
+    if (touched) {
+        // X 좌표 읽기
+        uint8_t x_h = RA8875_ReadReg(0x72) & 0x03; // 상위 2비트
+        uint8_t x_l = RA8875_ReadReg(0x74);        // 하위 8비트
+        x = (x_h << 8) | x_l;
+
+        // Y 좌표를 읽기 위해 모드 변경
+        RA8875_WriteReg(0x70, (1 << 7) | (3 << 4) | (0 << 3) | (3 << 0)); // Y축 데이터 획득 모드로 변경
+
+        // Y 좌표 읽기
+        uint8_t y_h = RA8875_ReadReg(0x73) & 0x03; // 상위 2비트
+        uint8_t y_l = RA8875_ReadReg(0x74);        // 하위 8비트
+        y = (y_h << 8) | y_l;
+
+        // 다시 X축 모드로 돌아가기
+        RA8875_WriteReg(0x70, (1 << 7) | (3 << 4) | (0 << 3) | (2 << 0));
+
+        char pos_str[50];
+        sprintf(pos_str, "X: %d, Y: %d\r\n", x, y);
+        UART1_Transmit_String(pos_str);
+    }
+
+    char debug_str2[50];
+    sprintf(debug_str2, "TPCR: 0x%02X\r\n", RA8875_ReadReg(0x72));
+    UART1_Transmit_String(debug_str2);
+
+    //HAL_Delay(100); // 폴링 간격
+    bsp_DelayMS(100);
+}
+
+
 
 /*
 *********************************************************************************************************
@@ -819,6 +866,154 @@ void RA8875_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_
 	RA8875_WaitBusy();
 	s_ucRA8875Busy = 0;
 }
+
+/*
+*********************************************************************************************************
+*  Func name: RA8875_IsBusy
+*********************************************************************************************************
+*/
+uint8_t RA8875_IsBusy(void)
+{
+	if (s_ucRA8875Busy == 0)
+	{
+		return 0;
+	}
+	return 1;
+}
+
+/*
+*********************************************************************************************************
+* Func name: RA8875_TouchReadX
+*********************************************************************************************************
+*/
+uint16_t RA8875_TouchReadX(void)
+{
+	uint16_t usAdc;
+	uint8_t ucRegValue;
+	uint8_t ucReg74;
+
+	ucRegValue = RA8875_ReadReg(0xF1);
+	if (ucRegValue & (1 << 2))
+	{
+		ucReg74 = RA8875_ReadReg(0x74);
+		usAdc = RA8875_ReadReg(0x72);
+		usAdc <<= 2;
+		usAdc += (ucReg74 & 0x03);
+
+		s_usTouchX = usAdc;
+
+		usAdc = RA8875_ReadReg(0x73);	/* Bit9-2 */
+		usAdc <<= 2;
+		usAdc += ((ucReg74 & 0x0C) >> 2);
+
+		s_usTouchY = usAdc;
+	}
+	else
+	{
+		s_usTouchX = 0;
+		s_usTouchY = 0;
+	}
+
+	RA8875_WriteCmd(0xF1);
+	RA8875_WriteData(1 << 2);
+
+	return s_usTouchX;
+}
+
+/*
+*********************************************************************************************************
+* Func name: RA8875_TouchReadY
+*********************************************************************************************************
+*/
+uint16_t RA8875_TouchReadY(void)
+{
+	return s_usTouchY;
+}
+
+/*
+*********************************************************************************************************
+* Func name: RA8875_FillRect
+*********************************************************************************************************
+*/
+void RA8875_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
+{
+	RA8875_WriteReg(0x91, _usX);
+	RA8875_WriteReg(0x92, _usX >> 8);
+	RA8875_WriteReg(0x93, _usY);
+	RA8875_WriteReg(0x94, _usY >> 8);
+
+	RA8875_WriteReg(0x95, _usX + _usWidth - 1);
+	RA8875_WriteReg(0x96, (_usX + _usWidth - 1) >> 8);
+	RA8875_WriteReg(0x97, _usY + _usHeight - 1);
+	RA8875_WriteReg(0x98, (_usY + _usHeight - 1) >> 8);
+
+	RA8875_SetFrontColor(_usColor);	/* ÉèÖÃÑÕÉ« */
+
+	s_ucRA8875Busy = 1;
+	//	RA8875_WriteReg(0x90, (1 << 7) | (1 << 5) | (1 << 4) | (0 << 0));	/* ¿ªÊ¼Ìî³ä¾ØÐÎ  */
+	RA8875_WriteCmd(0x90);
+	RA8875_WriteData((1 << 7) | (1 << 5) | (1 << 4) | (0 << 0));
+	//	while (RA8875_ReadReg(0x90) & (1 << 7));							/* µÈ´ý½áÊø */
+	RA8875_WaitBusy();
+	s_ucRA8875Busy = 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

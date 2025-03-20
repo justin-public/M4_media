@@ -13,3 +13,6 @@
 ../Core/bsp/Src/bsp_tft_lcd.c:473:10:LCD_GetWidth	4	static
 ../Core/bsp/Src/bsp_tft_lcd.c:483:6:LCD_DrawRect	32	static
 ../Core/bsp/Src/bsp_tft_lcd.c:500:6:LCD_DrawCircle	24	static
+../Core/bsp/Src/bsp_tft_lcd.c:517:6:LCD_GetChipDescribe	16	static
+../Core/bsp/Src/bsp_tft_lcd.c:548:6:LCD_Fill_Rect	32	static
+../Core/bsp/Src/bsp_tft_lcd.c:570:6:LCD_DrawButton	40	static

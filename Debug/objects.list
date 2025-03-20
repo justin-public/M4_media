@@ -20,7 +20,7 @@
 "./Core/Image/radio.o"
 "./Core/Image/web.o"
 "./Core/Src/bmp_file.o"
-"./Core/Src/hart_test.o"
+"./Core/Src/hard_test.o"
 "./Core/Src/main.o"
 "./Core/Src/main_menu.o"
 "./Core/Src/param.o"

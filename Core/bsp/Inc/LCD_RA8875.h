@@ -63,4 +63,6 @@ void RA8875_Sleep(void);
 void RA8875_StartDirectDraw(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth);
 void RA8875_QuitDirectDraw(void);
 
+void TOUCH_Poll(void);
+
 #endif /* BSP_INC_LCD_RA8875_H_ */

@@ -193,9 +193,67 @@ void bsp_InitI2C(void)
 	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_OD;
 	GPIO_InitStructure.Pull = GPIO_NOPULL;
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-
 	GPIO_InitStructure.Pin = I2C_SCL_PIN | I2C_SDA_PIN;
+
 	HAL_GPIO_Init(GPIO_PORT_I2C, &GPIO_InitStructure);
 
 	i2c_Stop();
 }
+
+/*
+*********************************************************************************************************
+*	Func name: i2c_CheckDevice
+*********************************************************************************************************
+*/
+uint8_t i2c_CheckDevice(uint8_t _Address)
+{
+	uint8_t ucAck;
+
+	if (I2C_SDA_READ() && I2C_SCL_READ())
+	{
+		i2c_Start();
+
+		i2c_SendByte(_Address | I2C_WR);
+		ucAck = i2c_WaitAck();
+
+		i2c_Stop();
+
+		return ucAck;
+	}
+	return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

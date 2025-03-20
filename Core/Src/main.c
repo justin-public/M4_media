@@ -17,77 +17,41 @@ int main(void)
 	uint16_t ucStatus;
 
 	HAL_Init();
-	SystemInit_clk();
+
+	SystemClock_Config();
+	//SystemInit_clk();
 	//IWDG_Init();
 
 	bsp_Init();
 
-	//LoadParam();
+	LoadParam();
 
-	//LCD_InitHard();
+	LCD_InitHard();
 
-	//TOUCH_InitHard();
+	TOUCH_InitHard();
 
-	//LCD_ClrScr(CL_YELLOW);
-	//LCD_SetBackLight(g_tParam.ucBackLight);
+	LCD_ClrScr(CL_YELLOW);
+	LCD_SetBackLight(g_tParam.ucBackLight);
 
-	//uint8_t keyStatus = 0;
-	// 변수 선언
-#if 0
-	char msg[] = "Hello, UART1!\r\n";
-	HAL_StatusTypeDef status;
-#endif
 	ucStatus = MS_MAIN_MENU;
+
+	uint16_t usAdcX;
+	uint16_t usAdcY;
+
 	while (1)
 	{
 #if 0
-		bsp_KeyScan();  // 키 상태 스캔
-		uint8_t key = bsp_GetKey();
-		if (key != KEY_NONE)
-		{
-			char debug_str[50];
-			sprintf(debug_str, "K1 pinState: %d\r\n", key);
-			UART1_Transmit_String(debug_str);
-			// 키 이벤트 처리
-			//printf("Key event: %d\n", key);
-		}
-		HAL_Delay(10);  // 10ms 간격으로 스캔
+		//TOUCH_Poll();
+		TOUCH_WaitRelease();
+		usAdcX = TOUCH_ReadAdcX();
+		usAdcY = TOUCH_ReadAdcY();
+
+		char msg[50];
+		sprintf(msg,"%f\n",usAdcX);
+		UART1_Transmit_String(msg);
+		bsp_DelayMS(500);
 #endif
-#if 0
-		//if(ucStatus == MS_MAIN_MENU)
-		//{
-			if (HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_11) == GPIO_PIN_RESET)
-			{
-				TOUCH_Calibration();
-			}
-			if(keyStatus == 0)
-			{
-				//bsp_LedOff(1);
-				//ucStatus = MainMenu();
-			}
-		//}
-#endif
-#if 0
-		uint8_t keyStatus = 0;
-		if (HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_11) == GPIO_PIN_RESET)
-		{
-			//printf("K1 Pressed\r\n");
-			bsp_LedOn(1);
-			keyStatus = 1;
-		}
-		if(keyStatus == 0)
-		{
-			bsp_LedOff(1);
-		}
-#endif
-#if 0
-		uint32_t pinState = (GPIOI->IDR & GPIO_PIN_8);
-		char debug_str[50];
-		sprintf(debug_str, "K1 pinState: %lu\r\n", pinState);
-		UART1_Transmit_String(debug_str);
-		HAL_Delay(500);
-#endif
-#if 0
+#if 1
 		switch (ucStatus)
 		{
 			case MS_CALIBRATION:
@@ -108,19 +72,7 @@ int main(void)
 			break;
 		}
 #endif
-#if 0
-		HAL_GPIO_TogglePin(GPIOI, GPIO_PIN_10);
-		Delay_ms(5000);
-#endif
-#if 0
-		status = UART1_Transmit_String(msg);
-		if (status != HAL_OK)
-		{
-			Error_Handler();
-		}
-		// 잠시 대기
-		HAL_Delay(5000);
-#endif
+
 	}
 }
 

@@ -69,6 +69,10 @@ uint16_t _usRectX, uint16_t _usRectY, uint16_t _usRectH, uint16_t _usRectW);
 void TOUCH_Scan(void);
 int32_t TOUCH_Abs(int32_t x);
 
+void TOUCH_WaitRelease(void);
+
+uint8_t TOUCH_MoveValid(uint16_t _usX1, uint16_t _usY1, uint16_t _usX2, uint16_t _usY2);
+
 extern TOUCH_T g_tTP;
 
 #endif /* BSP_INC_BSP_TOUCH_H_ */

@@ -52,8 +52,8 @@ void LCD_InitHard(void)
 			g_LcdWidth = LCD_30_WIDTH;
 		}
 	}
-	LCD_ClrScr(CL_BLUE);
-	LCD_SetBackLight(BRIGHT_DEFAULT);
+	//LCD_ClrScr(CL_BLUE);
+	//LCD_SetBackLight(BRIGHT_DEFAULT);
 }
 
 
@@ -108,7 +108,7 @@ static void LCD_FSMCConfig(void)
 	timingRead.AddressSetupTime = 4;
 	timingRead.AddressHoldTime = 0;
 	timingRead.DataSetupTime = 8;
-	timingRead.BusTurnAroundDuration = 0;
+	timingRead.BusTurnAroundDuration = 1;
 	timingRead.CLKDivision = 0;
 	timingRead.DataLatency = 0;
 	timingRead.AccessMode = FSMC_ACCESS_MODE_A;
@@ -146,7 +146,7 @@ void LCD_ClrScr(uint16_t _usColor)
 	}
 	else	/* 5420£¬4001£¬61509 ·ÖÖ§ */
 	{
-		UART1_Transmit_String("LCD Controller is SFD5420 color\r\n");
+		//UART1_Transmit_String("LCD Controller is SFD5420 color\r\n");
 		//SPFD5420_ClrScr(_usColor);
 	}
 }
@@ -509,8 +509,106 @@ void LCD_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_t _
 	}
 }
 
+/*
+*********************************************************************************************************
+*	Func name: LCD_GetChipDescribe
+*********************************************************************************************************
+*/
+void LCD_GetChipDescribe(char *_str)
+{
+	switch (g_ChipID)
+	{
+		case IC_5420:
+			strcpy(_str, CHIP_STR_5420);
+		break;
 
+		case IC_4001:
+			strcpy(_str, CHIP_STR_4001);
+		break;
 
+		case IC_61509:
+			strcpy(_str, CHIP_STR_61509);
+		break;
+
+		case IC_8875:
+			strcpy(_str, CHIP_STR_8875);
+		break;
+
+		default:
+			strcpy(_str, "Unknow");
+		break;
+	}
+}
+
+/*
+*********************************************************************************************************
+*	Func name: LCD_Fill_Rect
+*********************************************************************************************************
+*/
+void LCD_Fill_Rect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
+{
+	uint16_t i;
+
+	if (g_ChipID == IC_8875)
+	{
+		RA8875_FillRect(_usX, _usY, _usHeight, _usWidth, _usColor);
+	}
+	else
+	{
+		//for (i = 0; i < _usHeight; i++)
+		//{
+			//SPFD5420_DrawHLine(_usX, _usY, _usX + _usWidth - 1, _usColor);
+		//}
+	}
+}
+
+/*
+*********************************************************************************************************
+* Func name: LCD_DrawEdit
+*********************************************************************************************************
+*/
+void LCD_DrawButton(BUTTON_T *_pBtn)
+{
+#if 1
+	uint16_t len, fwidth, x, y;
+
+	if (_pBtn->Focus == 1)
+	{
+		LCD_DrawRect(_pBtn->Left, _pBtn->Top, _pBtn->Height, _pBtn->Width, BUTTON_BORDER_COLOR);
+		LCD_DrawRect(_pBtn->Left + 1, _pBtn->Top + 1, _pBtn->Height - 2, _pBtn->Width - 2, BUTTON_BORDER1_COLOR);
+		LCD_DrawRect(_pBtn->Left + 2, _pBtn->Top + 2, _pBtn->Height - 4, _pBtn->Width - 4, BUTTON_BORDER2_COLOR);
+
+		LCD_Fill_Rect(_pBtn->Left + 3, _pBtn->Top + 3, _pBtn->Height - 6, _pBtn->Width - 6, BUTTON_ACTIVE_COLOR);
+	}
+	else
+	{
+		LCD_DrawRect(_pBtn->Left, _pBtn->Top, _pBtn->Height, _pBtn->Width, BUTTON_BORDER_COLOR);
+		LCD_DrawRect(_pBtn->Left + 1, _pBtn->Top + 1, _pBtn->Height - 2, _pBtn->Width - 2, BUTTON_BORDER1_COLOR);
+		LCD_DrawRect(_pBtn->Left + 2, _pBtn->Top + 2, _pBtn->Height - 4, _pBtn->Width - 4, BUTTON_BORDER2_COLOR);
+
+		LCD_Fill_Rect(_pBtn->Left + 3, _pBtn->Top + 3, _pBtn->Height - 6, _pBtn->Width - 6, BUTTON_BACK_COLOR);
+	}
+
+	len = strlen(_pBtn->pCaption);
+
+	if (_pBtn->Font->FontCode == FC_ST_16)
+	{
+		fwidth = 8;
+	}
+	else if(_pBtn->Font->FontCode == FC_ST_12)
+	{
+		fwidth = 6;
+	}
+	else
+	{
+		fwidth = 8;
+	}
+	x = _pBtn->Left + _pBtn->Width / 2 - (len * fwidth) / 2;
+	y = _pBtn->Top + _pBtn->Height / 2 - fwidth;
+
+	LCD_DispStr(x, y, _pBtn->pCaption, _pBtn->Font);
+#endif
+}
 
 
 

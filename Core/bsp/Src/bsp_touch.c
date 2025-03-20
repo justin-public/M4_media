@@ -15,25 +15,24 @@
 #include "param.h"
 
 /*
-¡¾1¡¿°²¸»À³STM32-X2¿ª·¢°å + 3.0´çÏÔÊ¾Ä£¿é£¬ ÏÔÊ¾Ä£¿éÉÏµÄ´¥ÃþÐ¾Æ¬Îª TSC2046»òÆä¼æÈÝÐ¾Æ¬
-	PA8   --> TP_CS
-	PD3   --> TP_BUSY
-	PA5   --> TP_SCK
-	PA6   --> TP_MISO
-	PA7   --> TP_MOSI
-	PC7   --> TP_PEN_INT
-
-¡¾2¡¿°²¸»À³STM32¿ª·¢°å + 4.3´ç»ò7´çÏÔÊ¾Ä£¿é£¨ÄÚÖÃRA8875Ð¾Æ¬)
-	RA8875ÄÚÖÃ´¥ÃþÆÁ½Ó¿Ú£¬Òò´ËÖ±½ÓÍ¨¹ýFSMC·ÃÎÊRA8875Ïà¹Ø¼Ä´æÆ÷¼´¿É¡£
-
-
-	±¾³ÌÐòÎ´Ê¹ÓÃ´¥±ÊÖÐ¶Ï¹¦ÄÜ¡£ÔÚ1msÖÜÆÚµÄ Systick¶¨Ê±ÖÐ¶Ï·þÎñ³ÌÐòÖÐ¶Ô´¥ÃþADCÖµ½øÐÐ²ÉÑùºÍ
-	ÂË²¨´¦Àí¡£µ±´¥±Ê°´ÏÂ³¬¹ý40msºó£¬¿ªÊ¼²É¼¯ADCÖµ£¨Ã¿1ms²É¼¯1´Î£¬Á¬Ðø²É¼¯10´Î£©£¬È»ºó¶Ô
-	Õâ10¸öÑù±¾½øÐÐÅÅÐò£¬¶ªÆú2Í·µÄÑù±¾£¬¶ÔÖÐ¼äÒ»¶ÎÑù±¾½øÐÐÇóºÍ²¢¼ÆËãÆ½¾ùÖµ¡£
-
-	²ÉÑù2µãÐ£×¼·½·¨£¬Ð£×¼ºó±£´æ2¸öÐ£×¼µãµÄADCÖµ£¬Êµ¼Ê¹¤×÷Ê±£¬¸ù¾Ý2µãÖ±Ïß·½³Ì¼ÆËãÆÁÄ»×ø±ê¡£
-	Ð£×¼²ÎÊýÓÐ±£´æ½Ó¿Ú£¬±¾³ÌÐòÖ÷ÒªÓÃÓÚÑÝÊ¾£¬Î´×ö±£´æ¹¦ÄÜ¡£
-	´ó¼Ò¿ÉÒÔ×Ô¼ºÐÞ¸Ä  TOUCH_SaveParam() ºÍ TOUCH_LoadParam() Á½¸öº¯ÊýÊµÏÖ±£´æ¹¦ÄÜ¡£
+[1] Alphonse STM32-X2 development board + 3.0 inch display module, the touch chip on the display module is TSC2046 or its compatible chip
+PA8 --> TP_CS
+PD3 --> TP_BUSY
+PA5 --> TP_SCK
+PA6 --> TP_MISO
+PA7 --> TP_MOSI
+PC7 --> TP_PEN_INT
+[2] Alphonse STM32 development board + 4.3 inch or 7 inch display module (with built-in RA8875 chip)
+RA8875 has a built-in touch screen interface, so it can be accessed directly through FSMC to the relevant RA8875 registers.
+This program does not use the touch pen interrupt function. In the 1ms periodic Systick interrupt service routine,
+the touch ADC values are sampled and filtered.
+After the touch pen is pressed for more than 40ms, it begins to collect ADC values (collecting once every 1ms, continuously for 10 times),
+then sorts these 10 samples, discards the first 2 samples, and calculates the average value of the middle section samples.
+The sampling uses a 2-point calibration method. After calibration, the ADC values of the 2 calibration points are saved.
+During actual operation, the screen coordinates are calculated based on the 2-point linear equation.
+The calibration parameters have a save interface.
+This program is mainly used for demonstration and does not implement the save function.
+You can modify the TOUCH_SaveParam() and TOUCH_LoadParam() functions to implement the save function yourself.
 
 */
 
@@ -87,7 +86,7 @@ int32_t TOUCH_Abs(int32_t x);
 
 static void TOUCH_DispPoint(uint8_t _ucIndex);
 
-static void TOUCH_WaitRelease(void);
+//static void TOUCH_WaitRelease(void);
 
 /*
 *********************************************************************************************************
@@ -110,7 +109,7 @@ void TOUCH_InitHard(void)
 		//TSC2046_InitHard();
 		//g_tTP.usMaxAdc = 4095;	/* 12Î»ADC */
 	}
-	TOUCH_LoadParam();	/* ¶ÁÈ¡Ð£×¼²ÎÊý */
+	TOUCH_LoadParam();
 	g_tTP.Write = g_tTP.Read = 0;
 	g_tTP.Enable = 1;
 }
@@ -187,6 +186,277 @@ uint8_t TOUCH_InRect(uint16_t _usX, uint16_t _usY,
 
 /*
 *********************************************************************************************************
+*	Func name: CalTwoPoint
+*********************************************************************************************************
+*/
+static int32_t CalTwoPoint(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x)
+{
+	return y1 + ((int32_t)(y2 - y1) * (x - x1)) / (x2 - x1);
+}
+
+/*
+*********************************************************************************************************
+* Func name: TOUCH_TransX
+*********************************************************************************************************
+*/
+static int16_t TOUCH_TransX(uint16_t _usAdcX, uint16_t _usAdcY)
+{
+#if CALIB_POINT_COUNT == 2
+	uint16_t x;
+	int32_t y;
+
+	if (g_tTP.XYChange == 0)
+	{
+		x = _usAdcX;
+		if (x == 0)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = CalTwoPoint(g_tTP.usAdcX1, TP_X1, g_tTP.usAdcX2, TP_X2, x);
+		}
+	}
+	else
+	{
+		x = _usAdcY;
+		if (x == 0)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = CalTwoPoint(g_tTP.usAdcY1, TP_X1, g_tTP.usAdcY2, TP_X2, x);
+		}
+	}
+	return y;
+#endif
+}
+
+/*
+*********************************************************************************************************
+*	Func name: TOUCH_TransY
+*********************************************************************************************************
+*/
+static int16_t TOUCH_TransY(uint16_t _usAdcX, uint16_t _usAdcY)
+{
+#if CALIB_POINT_COUNT == 2
+	int32_t x;
+	int32_t y;
+
+	if (g_tTP.XYChange == 0)
+	{
+		x = _usAdcY;
+		if (x == 0)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = CalTwoPoint(g_tTP.usAdcY1, TP_Y1, g_tTP.usAdcY2, TP_Y2, x);
+		}
+	}
+	else
+	{
+		x = _usAdcX;
+		if (x == 0)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = CalTwoPoint(g_tTP.usAdcX1, TP_Y1, g_tTP.usAdcX2, TP_Y2, x);
+		}
+	}
+	return y;
+#else
+	int32_t x, x1, x2;
+	int32_t y;
+
+	if (g_tTP.XYChange == 0)	/* X Y ×ø±ê²»½»»» */
+	{
+		x = _usAdcY;
+
+		/* ¸ù¾Ý X ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
+		if  _usAdcX = usAdcX1 then  È¡µã = (AdcY1, TP_Y1, AdcY3, TP_Y3, _usAdcX)
+		if  _usAdcX = usAdcX2 then  È¡µã = (AdcY4, TP_Y4, AdcY2, TP_Y2, _usAdcX)
+
+		ÆäÖÐ TP_Y1 = TP_Y4;  TP_Y3 = TP_Y2 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
+		ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+		*/
+		x1 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY1, g_tTP.usAdcX2,  g_tTP.usAdcY4, _usAdcX);
+		x2 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY3, g_tTP.usAdcX2,  g_tTP.usAdcY2, _usAdcX);
+	}
+	else						/* X Y ×ø±ê½»»» */
+	{
+		x = _usAdcX;
+		/* ¸ù¾Ý X ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
+		if  _usAdcY = usAdcY1 then  È¡µã = (AdcX1, TP_Y1, AdcX3, TP_Y3, _usAdcY)
+		if  _usAdcY = usAdcY2 then  È¡µã = (AdcX4, TP_Y4, AdcX2, TP_Y2, _usAdcY)
+		ÆäÖÐ TP_Y1 = TP_Y3;  TP_Y4 = TP_Y2 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
+		ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+		*/
+		x1 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX1, g_tTP.usAdcY2,  g_tTP.usAdcX4, _usAdcY);
+		x2 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX3, g_tTP.usAdcY2,  g_tTP.usAdcX2, _usAdcY);
+	}
+
+	if (x == 0)
+	{
+		y = 0;
+	}
+	else
+	{
+		/* ¸ù¾Ý2µãÖ±Ïß·½³Ì£¬¼ÆËã×ø±ê */
+		y = CalTwoPoint(x1, TP_Y1, x2, TP_Y2, x);
+	}
+	return y;
+#endif
+}
+
+/*
+*********************************************************************************************************
+* Func name: TOUCH_PutKey
+*********************************************************************************************************
+*/
+void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
+{
+	g_tTP.Event[g_tTP.Write] = _ucEvent;
+	g_tTP.XBuf[g_tTP.Write] = TOUCH_TransX(_usX, _usY);
+	g_tTP.YBuf[g_tTP.Write] = TOUCH_TransY(_usX, _usY);
+
+	if (++g_tTP.Write  >= TOUCH_FIFO_SIZE)
+	{
+		g_tTP.Write = 0;
+	}
+}
+
+/*
+*********************************************************************************************************
+* Func name: TOUCH_MoveValid
+*********************************************************************************************************
+*/
+uint8_t TOUCH_MoveValid(uint16_t _usX1, uint16_t _usY1, uint16_t _usX2, uint16_t _usY2)
+{
+	int16_t iX, iY;
+	static uint8_t s_invalid_count = 0;
+
+	iX = TOUCH_Abs(_usX1 - _usX2);
+	iY = TOUCH_Abs(_usY1 - _usY2);
+
+	if ((iX < 25) && (iY < 25))
+	{
+		s_invalid_count = 0;
+		return 1;
+	}
+	else
+	{
+		if (++s_invalid_count >= 3)
+		{
+			s_invalid_count = 0;
+			return 1;
+		}
+		return 0;
+	}
+}
+
+/*
+*********************************************************************************************************
+*	Func name: TOUCH_Scan
+*********************************************************************************************************
+*/
+void TOUCH_Scan(void)
+{
+	uint16_t usAdcX;
+	uint16_t usAdcY;
+	static uint16_t s_usXBuf[SAMPLE_COUNT];
+	static uint16_t s_usYBuf[SAMPLE_COUNT];
+	static uint8_t s_ucPos = 0;
+	static uint8_t s_count = 0;
+	static uint8_t s_down = 0;
+	static uint16_t s_usSaveAdcX, s_usSaveAdcY;
+
+	if (g_tTP.Enable == 0)
+	{
+		return;
+	}
+	if (g_ChipID == IC_8875)
+	{
+		if (RA8875_IsBusy())
+		{
+			return;
+		}
+		usAdcX = RA8875_TouchReadX();
+		usAdcY = RA8875_TouchReadY();
+	}
+	else
+	{
+		//usAdcX = TSC2046_ReadAdc(ADC_CH_X);
+		//usAdcY = TSC2046_ReadAdc(ADC_CH_Y);
+	}
+	if (TOUCH_PressValid(usAdcX, usAdcY))
+	{
+		if (s_count >= 30)
+		{
+			s_usXBuf[s_ucPos] = usAdcX;
+			s_usYBuf[s_ucPos] = usAdcY;
+
+			if (++s_ucPos >= SAMPLE_COUNT)
+			{
+				s_ucPos = 0;
+
+				g_tTP.usAdcNowX = TOUCH_DataFilter(s_usXBuf, SAMPLE_COUNT);
+				g_tTP.usAdcNowY = TOUCH_DataFilter(s_usYBuf, SAMPLE_COUNT);
+
+				if (s_down == 0)
+				{
+					s_down = 1;
+					TOUCH_PutKey(TOUCH_DOWN, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
+
+					s_usSaveAdcX = g_tTP.usAdcNowX;
+					s_usSaveAdcY = g_tTP.usAdcNowY;
+				}
+				else
+				{
+					if (TOUCH_MoveValid(s_usSaveAdcX, s_usSaveAdcY, g_tTP.usAdcNowX, g_tTP.usAdcNowY))
+					{
+						TOUCH_PutKey(TOUCH_MOVE, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
+
+						s_usSaveAdcX = g_tTP.usAdcNowX;
+						s_usSaveAdcY = g_tTP.usAdcNowY;
+					}
+					else
+					{
+						g_tTP.usAdcNowX = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			s_count++;
+		}
+	}
+	else
+	{
+		if (s_count > 0)
+		{
+			if (--s_count == 0)
+			{
+				TOUCH_PutKey(TOUCH_RELEASE, s_usSaveAdcX, s_usSaveAdcY);
+
+				g_tTP.usAdcNowX = 0;
+				g_tTP.usAdcNowY = 0;
+
+				s_count = 0;
+				s_down = 0;
+			}
+		}
+		s_ucPos = 0;
+	}
+}
+
+/*
+*********************************************************************************************************
 * Func name: TOUCH_Calibration
 *********************************************************************************************************
 */
@@ -198,25 +468,24 @@ void TOUCH_Calibration(void)
 	uint8_t i;
 	uint32_t n;
 
-	TOUCH_CelarFIFO();		/* Çå³ýÎÞÐ§µÄ´¥ÃþÊÂ¼þ */
+	TOUCH_CelarFIFO();
 
 	for (i = 0; i < CALIB_POINT_COUNT; i++)
 	{
 		TOUCH_DispPoint(i);		/* ÏÔÊ¾Ð£×¼µã */
-
 		TOUCH_WaitRelease(); 	/* µÈ´ý´¥±ÊÊÍ·Å */
 
 		usCount = 0;
 		for (n = 0; n < 500; n++)
 		{
 			usAdcX = TOUCH_ReadAdcX();
+
 			usAdcY = TOUCH_ReadAdcY();
 
 			if (TOUCH_PressValid(usAdcX, usAdcY))
 			{
 				if (++usCount > 5)
 				{
-					/* °´Ñ¹ÓÐÐ§, ±£´æÐ£×¼µãADC²ÉÑùÖµ */
 					if (i == 0)
 					{
 						g_tTP.usAdcX1 = usAdcX;
@@ -279,9 +548,11 @@ void TOUCH_Calibration(void)
 */
 void TOUCH_CelarFIFO(void)
 {
-	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	//__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	__enable_irq();
 	g_tTP.Write = g_tTP.Read;
-	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+	//__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+	__disable_irq();
 }
 
 /*
@@ -333,7 +604,7 @@ static void TOUCH_DispPoint(uint8_t _ucIndex)
 * Func name: TOUCH_WaitRelease
 *********************************************************************************************************
 */
-static void TOUCH_WaitRelease(void)
+void TOUCH_WaitRelease(void)
 {
 	uint8_t usCount = 0;
 
@@ -387,6 +658,7 @@ uint16_t TOUCH_ReadAdcX(void)
 	uint16_t usAdc;
 
 	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+
 	usAdc = g_tTP.usAdcNowX;
 	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
 
@@ -424,6 +696,42 @@ int32_t TOUCH_Abs(int32_t x)
 	{
 		return -x;
 	}
+}
+
+/*
+*********************************************************************************************************
+*  Func name: TOUCH_DataFilter
+*********************************************************************************************************
+*/
+static uint16_t TOUCH_DataFilter(uint16_t *_pBuf, uint8_t _ucCount)
+{
+	uint8_t flag;
+	uint8_t i;
+	uint16_t usTemp;
+	uint32_t uiSum;
+
+	do
+	{
+		flag = 0;
+		for (i = 0; i < _ucCount - 1; i++)
+		{
+			if (_pBuf[i] > _pBuf[i+1])
+			{
+				usTemp = _pBuf[i + 1];
+				_pBuf[i+1] = _pBuf[i];
+				_pBuf[i] = usTemp;
+				flag = 1;
+			}
+		}
+	}while(flag);
+
+	uiSum = 0;
+	for (i = 0; i < _ucCount / 3; i++)
+	{
+		uiSum += _pBuf[_ucCount / 3 + i];
+	}
+	usTemp = uiSum / (_ucCount / 3);
+	return usTemp;
 }
 
 /*

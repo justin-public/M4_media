@@ -308,19 +308,8 @@ uint8_t MainMenu(void)
 			}
 		}
 #endif
-		//UART1_Transmit_String("D0");
-		//int keynum = IsKeyDown1();
-		//char msg[20];
-		//sprintf(msg, "K1 value: %d\r\n", keynum);
-		//UART1_Transmit_String(msg);
-		//HAL_Delay(500);
 		bsp_KeyScan();  // 키 상태 스캔
 		ucKeyCode = bsp_GetKey();	/* ¶ÁÈ¡¼üÖµ, ÎÞ¼ü°´ÏÂÊ±·µ»Ø KEY_NONE = 0 */
-
-		//char msg1[50];
-		//sprintf(msg1, "Keycode value: %d\r\n", ucKeyCode);
-		//UART1_Transmit_String(msg1);
-		//HAL_Delay(50);
 
 		if (ucKeyCode != KEY_NONE)
 		{

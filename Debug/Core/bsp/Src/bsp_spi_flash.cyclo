@@ -1,7 +1,6 @@
-../Core/bsp/Src/bsp_spi_flash.c:115:6:bsp_InitSFlash	1
-../Core/bsp/Src/bsp_spi_flash.c:205:13:bsp_CfgSPIForSFlash	1
-../Core/bsp/Src/bsp_spi_flash.c:239:6:sf_ReadInfo	5
-../Core/bsp/Src/bsp_spi_flash.c:284:10:sf_ReadID	1
-../Core/bsp/Src/bsp_spi_flash.c:306:16:sf_SendByte	1
-../Core/bsp/Src/bsp_spi_flash.c:337:13:sf_WaitForWriteEnd	2
-../Core/bsp/Src/bsp_spi_flash.c:350:13:sf_WriteStatus	2
+../Core/bsp/Src/bsp_spi_flash.c:60:6:bsp_InitSFlash	2
+../Core/bsp/Src/bsp_spi_flash.c:111:6:sf_ReadInfo	5
+../Core/bsp/Src/bsp_spi_flash.c:147:10:sf_ReadID	1
+../Core/bsp/Src/bsp_spi_flash.c:185:16:sf_SendByte	1
+../Core/bsp/Src/bsp_spi_flash.c:203:13:sf_WaitForWriteEnd	2
+../Core/bsp/Src/bsp_spi_flash.c:216:13:sf_WriteStatus	2

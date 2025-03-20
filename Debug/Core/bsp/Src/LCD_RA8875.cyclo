@@ -19,6 +19,11 @@
 ../Core/bsp/Src/LCD_RA8875.c:704:13:RA8875_SetReadCursor	1
 ../Core/bsp/Src/LCD_RA8875.c:717:10:RA8875_ReadData16	1
 ../Core/bsp/Src/LCD_RA8875.c:746:6:RA8875_TouchInit	1
-../Core/bsp/Src/LCD_RA8875.c:760:6:RA8875_DrawRect	1
-../Core/bsp/Src/LCD_RA8875.c:789:6:RA8875_WaitBusy	2
-../Core/bsp/Src/LCD_RA8875.c:799:6:RA8875_DrawCircle	2
+../Core/bsp/Src/LCD_RA8875.c:759:6:TOUCH_Poll	2
+../Core/bsp/Src/LCD_RA8875.c:807:6:RA8875_DrawRect	1
+../Core/bsp/Src/LCD_RA8875.c:836:6:RA8875_WaitBusy	2
+../Core/bsp/Src/LCD_RA8875.c:846:6:RA8875_DrawCircle	2
+../Core/bsp/Src/LCD_RA8875.c:875:9:RA8875_IsBusy	2
+../Core/bsp/Src/LCD_RA8875.c:889:10:RA8875_TouchReadX	2
+../Core/bsp/Src/LCD_RA8875.c:928:10:RA8875_TouchReadY	1
+../Core/bsp/Src/LCD_RA8875.c:938:6:RA8875_FillRect	1
