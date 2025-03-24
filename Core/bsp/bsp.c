@@ -19,8 +19,8 @@ void bsp_Init(void)
 	bsp_InitI2C();
 	bsp_InitTimer();
 
-	//bsp_DelayMS(20);
-	HAL_Delay(20);
+	bsp_DelayMS(20);
+	//HAL_Delay(20);
 }
 
 extern void SaveScreenToBmp(uint16_t _index);

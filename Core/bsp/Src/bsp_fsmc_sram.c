@@ -12,6 +12,7 @@
 *	SRAM_HandleTypeDef , FSMC_NORSRAM_TimingTypeDef
 *********************************************************************************************************
 */
+#if 1
 void bsp_InitExtSRAM(void)
 {
 	SRAM_HandleTypeDef hnorsram;
@@ -124,6 +125,7 @@ void bsp_InitExtSRAM(void)
 	timingRead.AccessMode = FSMC_ACCESS_MODE_A;
 
 	hnorsram.Instance = FSMC_NORSRAM_DEVICE;
+	hnorsram.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
 	hnorsram.Init.NSBank = FSMC_NORSRAM_BANK3;
 	hnorsram.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
 	hnorsram.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
@@ -140,12 +142,87 @@ void bsp_InitExtSRAM(void)
 
 	HAL_SRAM_Init(&hnorsram, &timingRead, &timingWrite);
 }
+#endif
 
-/*
-*********************************************************************************************************
-*	Func name: bsp_TestExtSRAM
-*********************************************************************************************************
-*/
+#if 0
+void bsp_InitExtSRAM(void)
+{
+	FSMC_NORSRAM_InitTypeDef  FSMC_NORSRAMInitStructure;
+	FSMC_NORSRAM_TimingTypeDef  p;
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	/* Enable GPIO clocks */
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+	__HAL_RCC_GPIOG_CLK_ENABLE();
+
+	/* Enable FSMC clock */
+	__HAL_RCC_FSMC_CLK_ENABLE();
+
+	/* GPIOD configuration */
+	GPIO_InitStructure.Pin = GPIO_PIN_0  | GPIO_PIN_1  | GPIO_PIN_4  | GPIO_PIN_5  |
+	                          GPIO_PIN_8  | GPIO_PIN_9  | GPIO_PIN_10 | GPIO_PIN_11 |
+	                          GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+	GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStructure.Pull = GPIO_NOPULL;
+	GPIO_InitStructure.Alternate = GPIO_AF12_FSMC;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+	/* GPIOE configuration */
+	GPIO_InitStructure.Pin = GPIO_PIN_0  | GPIO_PIN_1  | GPIO_PIN_3  | GPIO_PIN_4  |
+	                          GPIO_PIN_5  | GPIO_PIN_7  | GPIO_PIN_8  | GPIO_PIN_9  |
+	                          GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 |
+	                          GPIO_PIN_14 | GPIO_PIN_15;
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+	/* GPIOF configuration */
+	GPIO_InitStructure.Pin = GPIO_PIN_0  | GPIO_PIN_1  | GPIO_PIN_2  | GPIO_PIN_3  |
+	                          GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_12 | GPIO_PIN_13 |
+	                          GPIO_PIN_14 | GPIO_PIN_15;
+	HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
+
+	/* GPIOG configuration */
+	GPIO_InitStructure.Pin = GPIO_PIN_0  | GPIO_PIN_1  | GPIO_PIN_2  | GPIO_PIN_3  |
+	                          GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_10;
+	HAL_GPIO_Init(GPIOG, &GPIO_InitStructure);
+
+	p.AddressSetupTime = 3;
+	p.AddressHoldTime = 0;
+    p.DataSetupTime = 2;
+	p.BusTurnAroundDuration = 1;
+	p.CLKDivision = 0;
+	p.DataLatency = 0;
+	p.AccessMode = FSMC_ACCESS_MODE_A;
+
+
+	// FSMC_NORSRAM_BANK1
+	// FSMC_NORSRAM_BANK3 ???
+	FSMC_NORSRAMInitStructure.NSBank = FSMC_NORSRAM_BANK3;
+	FSMC_NORSRAMInitStructure.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+	FSMC_NORSRAMInitStructure.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+	FSMC_NORSRAMInitStructure.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
+	FSMC_NORSRAMInitStructure.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+	FSMC_NORSRAMInitStructure.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+	FSMC_NORSRAMInitStructure.WrapMode = FSMC_WRAP_MODE_DISABLE;
+	FSMC_NORSRAMInitStructure.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+	FSMC_NORSRAMInitStructure.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+	FSMC_NORSRAMInitStructure.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+	FSMC_NORSRAMInitStructure.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
+	FSMC_NORSRAMInitStructure.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+	FSMC_NORSRAMInitStructure.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+	FSMC_NORSRAMInitStructure.ContinuousClock = FSMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+	FSMC_NORSRAMInitStructure.WriteFifo = FSMC_WRITE_BURST_ENABLE;
+	FSMC_NORSRAMInitStructure.PageSize = FSMC_PAGE_SIZE_NONE;
+
+	FSMC_NORSRAM_Init(FSMC_NORSRAM_DEVICE, &FSMC_NORSRAMInitStructure);
+	FSMC_NORSRAM_Timing_Init(FSMC_NORSRAM_DEVICE, &p, FSMC_NORSRAM_BANK3);    // FSMC_NORSRAM_BANK3
+
+	//FSMC_NORSRAM_EnableBank(FSMC_NORSRAM_BANK3);
+}
+#endif
+
 uint8_t bsp_TestExtSRAM(void)
 {
 	uint32_t i;
@@ -154,14 +231,12 @@ uint8_t bsp_TestExtSRAM(void)
 	uint32_t err;
 	const uint8_t ByteBuf[4] = {0x55, 0xA5, 0x5A, 0xAA};
 
-	/* Ð´SRAM */
 	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
 	{
 		*pSRAM++ = i;
 	}
 
-	/* ¶ÁSRAM */
 	err = 0;
 	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
@@ -177,7 +252,6 @@ uint8_t bsp_TestExtSRAM(void)
 		return  (4 * err);
 	}
 
-	/* ¶ÔSRAM µÄÊý¾ÝÇó·´²¢Ð´Èë */
 	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
 	{
@@ -185,7 +259,6 @@ uint8_t bsp_TestExtSRAM(void)
 		pSRAM++;
 	}
 
-	/* ÔÙ´Î±È½ÏSRAMµÄÊý¾Ý */
 	err = 0;
 	pSRAM = (uint32_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < EXT_SRAM_SIZE / 4; i++)
@@ -201,14 +274,12 @@ uint8_t bsp_TestExtSRAM(void)
 		return (4 * err);
 	}
 
-	/* ²âÊÔ°´×Ö½Ú·½Ê½·ÃÎÊ, Ä¿µÄÊÇÑéÖ¤ FSMC_NBL0 ¡¢ FSMC_NBL1 ¿ÚÏß */
 	pBytes = (uint8_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < sizeof(ByteBuf); i++)
 	{
 		*pBytes++ = ByteBuf[i];
 	}
 
-	/* ±È½ÏSRAMµÄÊý¾Ý */
 	err = 0;
 	pBytes = (uint8_t *)EXT_SRAM_ADDR;
 	for (i = 0; i < sizeof(ByteBuf); i++)
@@ -224,6 +295,7 @@ uint8_t bsp_TestExtSRAM(void)
 	}
 	return 0;
 }
+
 
 
 

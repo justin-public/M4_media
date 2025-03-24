@@ -1,2 +1,2 @@
-../Core/bsp/Src/bsp_fsmc_sram.c:15:6:bsp_InitExtSRAM	1
-../Core/bsp/Src/bsp_fsmc_sram.c:149:9:bsp_TestExtSRAM	13
+../Core/bsp/Src/bsp_fsmc_sram.c:16:6:bsp_InitExtSRAM	1
+../Core/bsp/Src/bsp_fsmc_sram.c:226:9:bsp_TestExtSRAM	13

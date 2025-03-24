@@ -17,6 +17,7 @@
 *	Func name: HardInfo
 *********************************************************************************************************
 */
+
 void HardInfo(void)
 {
 	uint8_t ucKeyCode;		/* °´¼ü´úÂë */
@@ -71,24 +72,64 @@ void HardInfo(void)
 		y += usLineCap;
 	}
 	/* SRAM */
-#if 1
 	{
 		if (bsp_TestExtSRAM() == 0)
 		{
 			sprintf(buf, "SRAM Model : IS61WV102416BLL-10TL, Test OK");
 			LCD_DispStr(x, y, buf, &tFont);
 		}
-		//else
+		else
 		{
-			//sprintf(buf, "SRAM Model: IS61WV102416BLL-10TL, Test Err");
+			sprintf(buf, "SRAM Model: IS61WV102416BLL-10TL, Test Err");
 
-			//tFont.FrontColor = CL_RED;
-			//LCD_DispStr(x, y, buf, &tFont);
-			//tFont.FrontColor = CL_WHITE;
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
 		}
 		y += usLineCap;
 	}
-#endif
+	{
+		uint32_t id;
+		id = NOR_ReadID();
+
+		if (id == S29GL128P)
+		{
+			sprintf(buf, "NOR Flash ID = 0x%08X, Model = S29GL128P, OK", id);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "NOR Flash ID = 0x%08X, Model = xxxx, Err", id);
+
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+	}
+	{
+		uint32_t id;
+
+		NAND_Init();
+
+		id = NAND_ReadID();
+		sprintf(buf, "NAND Flash ID = 0x%04X, Type = ", id);
+		//UART1_Transmit_String(buf);
+		if (id == HY27UF081G2A)
+		{
+			sprintf(buf, "NAND Flash ID = 0x%04X, Model = HY27UF081G2A, OK", id);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "NAND Flash ID = 0x%04X, Model = Unknow, Err", id);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+	}
+
 	/* I2c */
 	{
 		if (i2c_CheckDevice(EE_DEV_ADDR) == 0)
@@ -99,12 +140,109 @@ void HardInfo(void)
 		else
 		{
 			sprintf(buf, "AT24C128 Err (0x%02X)", EE_DEV_ADDR);
-
 			tFont.FrontColor = CL_RED;
 			LCD_DispStr(x, y, buf, &tFont);
 			tFont.FrontColor = CL_WHITE;
 		}
 		y += usLineCap;
+
+		if (i2c_CheckDevice(I2C_ADDR_SI4730_W) == 0)
+		{
+			sprintf(buf, "Si4730 Ok (0x%02X)", I2C_ADDR_SI4730_W);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "Si4730 Err (0x%02X)", I2C_ADDR_SI4730_W);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		if (i2c_CheckDevice(HMC5883L_SLAVE_ADDRESS) == 0)
+		{
+			sprintf(buf, "HMC5883L Ok (0x%02X)", HMC5883L_SLAVE_ADDRESS);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "HMC5883L Err (0x%02X)", HMC5883L_SLAVE_ADDRESS);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		if (i2c_CheckDevice(MPU6050_SLAVE_ADDRESS) == 0)
+		{
+			sprintf(buf, "MPU6050 Ok (0x%02X)", MPU6050_SLAVE_ADDRESS);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "MPU6050 Err (0x%02X)", MPU6050_SLAVE_ADDRESS);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		if (i2c_CheckDevice(BMP085_SLAVE_ADDRESS) == 0)
+		{
+			sprintf(buf, "BMP085 Ok (0x%02X)", BMP085_SLAVE_ADDRESS);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "BMP085 Err (0x%02X)", BMP085_SLAVE_ADDRESS);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		if (i2c_CheckDevice(WM8978_SLAVE_ADDRESS) == 0)
+		{
+			sprintf(buf, "WM8978 Ok (0x%02X)", WM8978_SLAVE_ADDRESS);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "WM8978 Err (0x%02X)", WM8978_SLAVE_ADDRESS);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		if (i2c_CheckDevice(BH1750_SLAVE_ADDRESS) == 0)
+		{
+			sprintf(buf, "BH1750 Ok (0x%02X)", BH1750_SLAVE_ADDRESS);
+			LCD_DispStr(x, y, buf, &tFont);
+		}
+		else
+		{
+			sprintf(buf, "BH1750 Err (0x%02X)", BH1750_SLAVE_ADDRESS);
+			tFont.FrontColor = CL_RED;
+			LCD_DispStr(x, y, buf, &tFont);
+			tFont.FrontColor = CL_WHITE;
+		}
+		y += usLineCap;
+
+		{
+			sprintf(buf, "SPI Flash ID= = %08X, Model = %s",g_tSF.ChipID , g_tSF.ChipName);
+			if (g_tSF.ChipID == W25Q64BV_ID)
+			{
+				LCD_DispStr(x, y, buf, &tFont);
+			}
+			else
+			{
+				tFont.FrontColor = CL_RED;
+				LCD_DispStr(x, y, buf, &tFont);
+				tFont.FrontColor = CL_WHITE;
+			}
+		}
 	}
 
 	fRefresh = 1;

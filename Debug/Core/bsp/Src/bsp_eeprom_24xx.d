@@ -34,7 +34,10 @@ Core/bsp/Src/bsp_eeprom_24xx.o: ../Core/bsp/Src/bsp_eeprom_24xx.c \
  ../Core/bsp/Inc/bsp_led.h ../Core/bsp/Inc/bsp_timer.h \
  ../Core/bsp/Inc/bsp_key.h ../Core/bsp/Inc/bsp_spi_flash.h \
  ../Core/bsp/Inc/bsp_sdio_sd.h ../Core/bsp/Inc/bsp_i2c_gpio.h \
- ../Core/bsp/Inc/bsp_eeprom_24xx.h ../Core/bsp/Inc/bsp_fsmc_sram.h \
+ ../Core/bsp/Inc/bsp_eeprom_24xx.h ../Core/bsp/Inc/bsp_si4730.h \
+ ../Core/bsp/Inc/bsp_hmc5883l.h ../Core/bsp/Inc/bsp_mpu6050.h \
+ ../Core/bsp/Inc/bsp_bh1750.h ../Core/bsp/Inc/bsp_bmp085.h \
+ ../Core/bsp/Inc/bsp_wm8978.h ../Core/bsp/Inc/bsp_fsmc_sram.h \
  ../Core/bsp/Inc/bsp_nand_flash.h ../Core/bsp/Inc/bsp_nor_flash.h \
  ../Core/bsp/Inc/LCD_RA8875.h ../Core/bsp/Inc/LCD_SPFD5420.h \
  ../Core/bsp/Inc/bsp_ra8875_port.h ../Core/bsp/Inc/bsp_tft_lcd.h \
@@ -83,6 +86,12 @@ Core/bsp/Src/bsp_eeprom_24xx.o: ../Core/bsp/Src/bsp_eeprom_24xx.c \
 ../Core/bsp/Inc/bsp_sdio_sd.h:
 ../Core/bsp/Inc/bsp_i2c_gpio.h:
 ../Core/bsp/Inc/bsp_eeprom_24xx.h:
+../Core/bsp/Inc/bsp_si4730.h:
+../Core/bsp/Inc/bsp_hmc5883l.h:
+../Core/bsp/Inc/bsp_mpu6050.h:
+../Core/bsp/Inc/bsp_bh1750.h:
+../Core/bsp/Inc/bsp_bmp085.h:
+../Core/bsp/Inc/bsp_wm8978.h:
 ../Core/bsp/Inc/bsp_fsmc_sram.h:
 ../Core/bsp/Inc/bsp_nand_flash.h:
 ../Core/bsp/Inc/bsp_nor_flash.h:

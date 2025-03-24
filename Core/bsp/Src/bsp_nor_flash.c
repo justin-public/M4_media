@@ -15,7 +15,7 @@
 #define Program_Timeout       ((uint32_t)0x00001400)
 
 /* PD6 ÊÇNOR FlashÊä³öµ½STM32µÄÃ¦ÐÅºÅ, Í¨¹ýGPIO²éÑ¯·½Ê½ÅÐÃ¦ */
-#define NOR_IS_BUSY()	(GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_6) == RESET)
+#define NOR_IS_BUSY() (HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_6) == GPIO_PIN_RESET)
 
 static void NOR_QuitToReadStatus(void);
 static uint8_t NOR_GetStatus(uint32_t Timeout);
@@ -29,8 +29,7 @@ static uint8_t NOR_GetStatus(uint32_t Timeout);
 void bsp_InitNorFlash(void)
 {
 	SRAM_HandleTypeDef hnorsram;
-	FSMC_NORSRAM_TimingTypeDef  timingWrite;
-	FSMC_NORSRAM_TimingTypeDef  timingRead;
+	FSMC_NORSRAM_TimingTypeDef  timing;
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	__HAL_RCC_GPIOD_CLK_ENABLE();
@@ -129,23 +128,26 @@ void bsp_InitNorFlash(void)
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
 
 	/*-- FSMC Configuration ------------------------------------------------------*/
-	timingWrite.AddressSetupTime = 0x06;
-	timingWrite.AddressHoldTime = 0x01;
-	timingWrite.DataSetupTime = 0x0C;
-	timingWrite.BusTurnAroundDuration = 0x00;
-	timingWrite.CLKDivision = 0x00;
-	timingWrite.DataLatency = 0x00;
-	timingWrite.AccessMode = FSMC_ACCESS_MODE_B;
-
-	timingRead.AddressSetupTime = 0x06;
-	timingRead.AddressHoldTime = 0x01;
-	timingRead.DataSetupTime = 0x0C;
-	timingRead.BusTurnAroundDuration = 0x00;
-	timingRead.CLKDivision = 0x00;
-	timingRead.DataLatency = 0x00;
-	timingRead.AccessMode = FSMC_ACCESS_MODE_B;
+#if 0
+	timing.AddressSetupTime = 0x06;
+	timing.AddressHoldTime = 0x01;
+	timing.DataSetupTime = 0x0C;
+	timing.BusTurnAroundDuration = 0x00;
+	timing.CLKDivision = 0x00;
+	timing.DataLatency = 0x00;
+	timing.AccessMode = FSMC_ACCESS_MODE_B;
+#endif
+	timing.AddressSetupTime = 6;
+	timing.AddressHoldTime = 1;
+	timing.DataSetupTime = 12;
+	timing.BusTurnAroundDuration = 0;
+	timing.CLKDivision = 0;
+	timing.DataLatency = 0;
+	timing.AccessMode = FSMC_ACCESS_MODE_B;
 
 	hnorsram.Instance = FSMC_NORSRAM_DEVICE;
+	hnorsram.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+
 	hnorsram.Init.NSBank = FSMC_NORSRAM_BANK2;
 	hnorsram.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
 	hnorsram.Init.MemoryType = FSMC_MEMORY_TYPE_NOR;
@@ -160,8 +162,326 @@ void bsp_InitNorFlash(void)
 	hnorsram.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
 	hnorsram.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
 
-	HAL_SRAM_Init(&hnorsram, &timingRead, &timingWrite);
+	HAL_SRAM_Init(&hnorsram, &timing, &timing);
 }
+
+/*
+*********************************************************************************************************
+*	Func Type: NOR_ReadID
+*********************************************************************************************************
+*/
+uint32_t NOR_ReadID(void)
+{
+	uint32_t uiID;
+	uint8_t id1, id2, id3, id4;
+
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x0090);
+
+	id1 = *(__IO uint16_t *) ADDR_SHIFT(0x0000);
+	id2 = *(__IO uint16_t *) ADDR_SHIFT(0x0001);
+	id3 = *(__IO uint16_t *) ADDR_SHIFT(0x000E);
+	id4 = *(__IO uint16_t *) ADDR_SHIFT(0x000F);
+
+	uiID = ((uint32_t)id1 << 24) | ((uint32_t)id2 << 16)  | ((uint32_t)id3 << 8) | id4;
+
+	NOR_WRITE(NOR_FLASH_ADDR, 0x00F0 );
+
+	return uiID;
+}
+
+static void NOR_QuitToReadStatus(void)
+{
+	NOR_WRITE(ADDR_SHIFT(0x00555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x002AA), 0x0055);
+	NOR_WRITE(NOR_FLASH_ADDR, 0x00F0 );
+}
+
+static uint8_t NOR_GetStatus(uint32_t Timeout)
+{
+	uint16_t val1 = 0x00;
+	uint16_t val2 = 0x00;
+	uint8_t status = NOR_ONGOING;
+	uint32_t timeout = Timeout;
+
+	while ((!NOR_IS_BUSY()) && (timeout > 0))
+	{
+		timeout--;
+	}
+
+	timeout = Timeout;
+	while(NOR_IS_BUSY() && (timeout > 0))
+	{
+		timeout--;
+	}
+
+
+	while ((Timeout != 0x00) && (status != NOR_SUCCESS))
+	{
+		Timeout--;
+
+		/* Read DQ6 */
+		val1 = *(__IO uint16_t *)(NOR_FLASH_ADDR);
+		val2 = *(__IO uint16_t *)(NOR_FLASH_ADDR);
+
+		/* If DQ6 did not toggle between the two reads then return NOR_Success */
+		if ((val1 & 0x0040) == (val2 & 0x0040))
+		{
+			return NOR_SUCCESS;
+		}
+
+		/* Read DQ2 */
+		if((val1 & 0x0020) != 0x0020)
+		{
+			status = NOR_ONGOING;
+		}
+
+		val1 = *(__IO uint16_t *)(NOR_FLASH_ADDR);
+		val2 = *(__IO uint16_t *)(NOR_FLASH_ADDR);
+
+		if((val1 & 0x0040) == (val2 & 0x0040))
+		{
+			return NOR_SUCCESS;
+		}
+		else if ((val1 & 0x0020) == 0x0020)
+		{
+			status = NOR_ERROR;
+			NOR_QuitToReadStatus();
+		}
+	}
+
+	if (Timeout == 0x00)
+	{
+		status = NOR_TIMEOUT;
+		NOR_QuitToReadStatus();
+	}
+
+	return (status);
+}
+
+uint8_t NOR_EraseChip(void)
+{
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x0080);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x0010);
+
+	return (NOR_GetStatus(ChipErase_Timeout));
+}
+
+uint8_t NOR_EraseSector(uint32_t _uiBlockAddr)
+{
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x0080);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE((NOR_FLASH_ADDR + _uiBlockAddr), 0x30);
+
+	return (NOR_GetStatus(BlockErase_Timeout));
+}
+
+uint8_t NOR_ReadByte(uint32_t _uiWriteAddr)
+{
+	uint16_t usHalfWord;
+
+	if (_uiWriteAddr % 2)	/* ÆæÊýµØÖ· */
+	{
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr - 1);
+		return (usHalfWord >> 8);	/* È¡¸ß8Bit */
+	}
+	else	/* Å¼ÊýµØÖ· */
+	{
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr);
+		return usHalfWord;	/* È¡µÍ8Bit */
+	}
+}
+
+void NOR_ReadBuffer(uint8_t *_pBuf, uint32_t _uiWriteAddr, uint32_t _uiBytes)
+{
+	uint16_t usHalfWord;
+	uint16_t *pNor16;
+	uint32_t i;
+	uint32_t uiNum;
+
+	uiNum = _uiBytes;
+
+	if (_uiWriteAddr % 2)	/* ÆæÊýµØÖ· */
+	{
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr - 1);
+		*_pBuf++ = (usHalfWord >> 8);	/* È¡¸ß8Bit */
+		uiNum--;
+		_uiWriteAddr++;		/* ±äÎªÅ¼Êý */
+	}
+
+	/* °´ÕÕË«×Ö½ÚÄ£Ê½Á¬Ðø¶ÁÈ¡NORÊý¾ÝÖÁ»º³åÇø_pBuf */
+	pNor16 = (uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr);
+	for (i = 0; i < uiNum / 2; i++)
+	{
+		usHalfWord = *pNor16++;
+		*_pBuf++ = usHalfWord;
+		*_pBuf++ = usHalfWord >> 8;
+		uiNum -= 2;
+	}
+
+	/* ´¦Àí×îºó1¸ö×Ö½Ú */
+	if (uiNum == 1)
+	{
+		*_pBuf++ = *pNor16;
+	}
+}
+
+uint8_t NOR_WriteHalfWord(uint32_t _uiWriteAddr, uint16_t _usData)
+{
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+	NOR_WRITE(ADDR_SHIFT(0x0555), 0x00A0);
+	NOR_WRITE(NOR_FLASH_ADDR + _uiWriteAddr, _usData);
+
+	return (NOR_GetStatus(Program_Timeout));
+}
+
+uint8_t NOR_WriteByte(uint32_t _uiWriteAddr, uint8_t _ucByte)
+{
+	uint16_t usHalfWord;
+
+	if (_uiWriteAddr % 2)	/* ÆæÊýµØÖ· */
+	{
+		/* ¶Á³ö2×Ö½ÚÊý¾Ý£¬È»ºó¸ÄÐ´¸ß×Ö½Ú£¬Î¬³ÖÒÔÇ°µÄµÍ×Ö½ÚÊý¾Ý²»±ä */
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr - 1);
+		usHalfWord &= 0x00FF;
+		usHalfWord |= (_ucByte << 8);
+	}
+	else
+	{
+		/* ¶ÁÈ¡NORÔ­Ê¼Êý¾Ý£¬±£Áô¸ß×Ö½Ú */
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr);
+		usHalfWord &= 0xFF00;
+		usHalfWord |= _ucByte;
+	}
+	return NOR_WriteHalfWord(_uiWriteAddr, usHalfWord);
+}
+
+uint8_t NOR_WriteInPage(uint16_t *pBuffer, uint32_t _uiWriteAddr,  uint16_t _usNumHalfword)
+{
+	uint32_t lastloadedaddress;
+	uint32_t currentaddress;
+	uint32_t endaddress;
+
+	/* pdf ±í7.7 Ð´Èë»º³åÆ÷±à³Ì
+
+		Ð´Èë»º³åÆ÷±à³ÌÔÊÐíÏµÍ³ÔÚÒ»¸ö±à³Ì²Ù×÷ÖÐÐ´Èë×î¶à32 ¸ö×Ö¡£Óë±ê×¼µÄ¡° ×Ö¡± ±à³ÌËã·¨Ïà±È£¬Õâ¿ÉÒÔÓÐÐ§µØ
+		¼Ó¿ì×Ö±à³ÌËÙ¶È¡£
+	*/
+
+	if (_usNumHalfword > 32)
+	{
+		return NOR_ERROR;
+	}
+
+	if ((_uiWriteAddr % 2) != 0)
+	{
+		return NOR_ERROR;
+	}
+
+	_uiWriteAddr = _uiWriteAddr / 2;
+
+	currentaddress = _uiWriteAddr;
+	endaddress = _uiWriteAddr + _usNumHalfword - 1;
+	lastloadedaddress = _uiWriteAddr;
+
+	/* ½âËøÃüÁîÐòÁÐ */
+	NOR_WRITE(ADDR_SHIFT(0x00555), 0x00AA);
+	NOR_WRITE(ADDR_SHIFT(0x02AA), 0x0055);
+
+	/* Write Write Buffer Load Command */
+	NOR_WRITE(ADDR_SHIFT(_uiWriteAddr), 0x0025);
+	NOR_WRITE(ADDR_SHIFT(_uiWriteAddr), (_usNumHalfword - 1));
+
+	/*  Load Data into NOR Buffer */
+	while (currentaddress <= endaddress)
+	{
+		/* Store last loaded address & data value (for polling) */
+		lastloadedaddress = currentaddress;
+
+		NOR_WRITE(ADDR_SHIFT(currentaddress), *pBuffer++);
+		currentaddress += 1;
+	}
+
+	NOR_WRITE(ADDR_SHIFT(lastloadedaddress), 0x29);
+
+	return (NOR_GetStatus(Program_Timeout));
+}
+
+
+uint8_t NOR_WriteBuffer(uint8_t *_pBuf, uint32_t _uiWriteAddr, uint32_t _uiBytes)
+{
+	uint16_t usHalfWord;
+	uint32_t i;
+	uint32_t uiNum;
+	uint8_t ucStatus;
+
+	uiNum = _uiBytes;
+	/* ´¦ÀíÊ××Ö½Ú */
+	if (_uiWriteAddr % 2)	/* ÆæÊýµØÖ· */
+	{
+		/* ¶Á³ö2×Ö½ÚÊý¾Ý£¬È»ºó¸ÄÐ´¸ß×Ö½Ú£¬Î¬³ÖÒÔÇ°µÄµÍ×Ö½ÚÊý¾Ý²»±ä */
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr - 1);
+		usHalfWord &= 0x00FF;
+		usHalfWord |= ((*_pBuf++) << 8);
+
+		ucStatus = NOR_WriteHalfWord(_uiWriteAddr - 1, usHalfWord);
+		if (ucStatus != NOR_SUCCESS)
+		{
+			goto err_quit;
+		}
+
+		uiNum--;
+		_uiWriteAddr++;		/* ±äÎªÅ¼Êý */
+	}
+
+	/* °´ÕÕË«×Ö½ÚÄ£Ê½Á¬Ðø±à³ÌNORÊý¾Ý */
+	for (i = 0; i < uiNum / 2; i++)
+	{
+		usHalfWord = *_pBuf++;
+		usHalfWord |= ((*_pBuf++) << 8);
+
+		ucStatus = NOR_WriteHalfWord(_uiWriteAddr, usHalfWord);
+		if (ucStatus != NOR_SUCCESS)
+		{
+			goto err_quit;
+		}
+
+		_uiWriteAddr += 2;
+	}
+
+	/* ´¦Àí×îºó1¸ö×Ö½Ú */
+	if (uiNum % 2)
+	{
+		/* ¶ÁÈ¡NORÔ­Ê¼Êý¾Ý£¬±£Áô¸ß×Ö½Ú */
+		usHalfWord = *(uint16_t *)(NOR_FLASH_ADDR + _uiWriteAddr);
+		usHalfWord &= 0xFF00;
+		usHalfWord |= (*_pBuf++);
+
+		ucStatus = NOR_WriteHalfWord(_uiWriteAddr, usHalfWord);
+		if (ucStatus != NOR_SUCCESS)
+		{
+			goto err_quit;
+		}
+	}
+	ucStatus = NOR_SUCCESS;
+err_quit:
+	return 	ucStatus;
+}
+
+
+
+
+
+
 
 
 

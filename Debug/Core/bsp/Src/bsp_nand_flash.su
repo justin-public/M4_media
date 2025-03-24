@@ -1,2 +1,9 @@
 ../Core/bsp/Src/bsp_nand_flash.c:44:13:BSP_FSMC_NAND_Init	144	static
-../Core/bsp/Src/bsp_nand_flash.c:149:9:NAND_Init	8	static
+../Core/bsp/Src/bsp_nand_flash.c:146:16:FSMC_NAND_ReadPage	32	static
+../Core/bsp/Src/bsp_nand_flash.c:175:16:FSMC_NAND_ReadSpare	24	static
+../Core/bsp/Src/bsp_nand_flash.c:189:16:NAND_BuildLUT	16	static
+../Core/bsp/Src/bsp_nand_flash.c:243:16:FSMC_NAND_ReadStatus	16	static
+../Core/bsp/Src/bsp_nand_flash.c:271:16:FSMC_NAND_GetStatus	16	static
+../Core/bsp/Src/bsp_nand_flash.c:296:16:FSMC_NAND_Reset	8	static
+../Core/bsp/Src/bsp_nand_flash.c:312:9:NAND_Init	16	static
+../Core/bsp/Src/bsp_nand_flash.c:330:10:NAND_ReadID	16	static

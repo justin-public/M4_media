@@ -1,1 +1,12 @@
-../Core/bsp/Src/bsp_nor_flash.c:29:6:bsp_InitNorFlash	184	static
+../Core/bsp/Src/bsp_nor_flash.c:29:6:bsp_InitNorFlash	160	static
+../Core/bsp/Src/bsp_nor_flash.c:173:10:NOR_ReadID	16	static
+../Core/bsp/Src/bsp_nor_flash.c:194:13:NOR_QuitToReadStatus	4	static
+../Core/bsp/Src/bsp_nor_flash.c:201:16:NOR_GetStatus	32	static
+../Core/bsp/Src/bsp_nor_flash.c:263:9:NOR_EraseChip	8	static
+../Core/bsp/Src/bsp_nor_flash.c:275:9:NOR_EraseSector	16	static
+../Core/bsp/Src/bsp_nor_flash.c:287:9:NOR_ReadByte	24	static
+../Core/bsp/Src/bsp_nor_flash.c:303:6:NOR_ReadBuffer	40	static
+../Core/bsp/Src/bsp_nor_flash.c:337:9:NOR_WriteHalfWord	16	static
+../Core/bsp/Src/bsp_nor_flash.c:347:9:NOR_WriteByte	24	static
+../Core/bsp/Src/bsp_nor_flash.c:368:9:NOR_WriteInPage	40	static
+../Core/bsp/Src/bsp_nor_flash.c:420:9:NOR_WriteBuffer	40	static
